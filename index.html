@@ -18,15 +18,13 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-light navbar-expand-md sticky-top text-justify float-none navigation-clean-search" style="background-color: rgb(40,45,50);color: rgb(255,255,255);">
-        <div class="container-fluid"><img class="img-fluid" data-bs-hover-animate="rubberBand" style="width: 45px;height: 45px;" src="assets/img/logotrans.png"><a class="navbar-brand" href="#" style="color: rgb(255,255,255);padding: 25px 20px;font-family: 'Encode Sans Expanded', sans-serif;">Traductor C# -Python</a>
-            <button
-                data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1" style="width: 331px;background-color: #3b434a;filter: blur(0px) brightness(129%);padding: 2px;margin: 2px 100px;"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon" style="color: rgb(255,255,255);"></span></button>
-                <div class="collapse navbar-collapse text-left flex-grow-1 justify-content-end" id="navcol-1">
-                    <div class="btn-toolbar"></div>
-                    <div class="btn-group justify-content-center" role="group"><button class="btn btn-primary text-center flex-row-reverse" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Abrir</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button"
-                            style="background-color: rgb(28,86,147);">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Nuevo</button></div>
-                </div>
+    <nav class="navbar navbar-light navbar-expand-md sticky-top navigation-clean-search" style="background-color: rgb(27,30,33);color: rgb(255,255,255);">
+        <div class="container-fluid"><img class="img-fluid" data-bs-hover-animate="rubberBand" style="width: 45px;height: 45px;" src="assets/img/logotrans.png"><a class="navbar-brand text-break" href="#" style="color: rgb(255,255,255);padding: 0px;font-family: Graduate, cursive;padding-left: 0px;padding-top: 10px;padding-bottom: 10px;">Traductor C# -Python</a>
+            <div
+                class="btn-toolbar">
+                <div class="btn-group" role="group" style="font-family: Graduate, cursive;"><button class="btn btn-primary text-center flex-row-reverse" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Abrir</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button"
+                        style="background-color: rgb(28,86,147);">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Nuevo</button></div>
+        </div>
         </div>
     </nav>
     <div>
@@ -34,52 +32,53 @@
             <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Untitled-1</a></li>
         </ul>
         <div class="tab-content">
-            <div class="tab-pane active" role="tabpanel" id="tab-1" style="background-color: #47515b;">
-                <div id="contenido" style="background-color: #47515b;margin: 0px;">
-                    <div class="float-right flex-grow-1" id="txt-salida" style="width: 570px;height: 54px;margin: 0px;"><textarea class="flex-grow-1"></textarea></div>
-                    <div class="d-flex justify-content-center align-items-start" id="txt-entrada" style="width: 570px;margin: 0px;padding: 0;"><textarea class="flex-grow-1"></textarea></div>
-                    <div id="salidas-tab">
-                        <div>
-                            <ul class="nav nav-tabs" style="background-color: #212529;">
-                                <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-4">HTML</a></li>
-                                <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5">JSON</a></li>
-                            </ul>
-                            <div class="tab-content">
-                                <div class="tab-pane active" role="tabpanel" id="tab-4"><textarea></textarea></div>
-                                <div class="tab-pane" role="tabpanel" id="tab-5"><textarea></textarea></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="table-variables">
-                        <div class="table-responsive table-bordered text-center" style="width: 100px;background-color: #ffffff;">
-                            <table class="table table-bordered table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Tipo</th>
-                                        <th>Linea</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Cell 1</td>
-                                        <td>Cell 2</td>
-                                        <td>Cell 3</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Cell 3</td>
-                                        <td>Cell 4</td>
-                                        <td>Cell 3</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+            <div class="tab-pane active" role="tabpanel" id="tab-1" style="background-color: #47515b;height: 866px;">
+                <div class="float-right flex-fill" id="txt-salida" style="height: 500px;width: 50%;padding: 2%;"><label style="font-family: Graduate, cursive;color: rgb(255,255,255);">salida - python</label><textarea class="flex-grow-1" style="font-family: Graduate, cursive;width: 100%;height: 95%;"></textarea></div>
+                <div class="float-left flex-fill"
+                    id="txt-entrada" style="width: 50%;height: 500px;padding: 2%;background-color: #47515b;"><label style="color: rgb(255,255,255);font-family: Graduate, cursive;">entrada - c#</label><textarea class="flex-grow-1" style="font-family: Graduate, cursive;width: 100%;height: 95%;"></textarea></div>
+                <div class="float-right" id="salidas-tab"
+                    style="width: 50%;padding: 2%;height: 314px;padding-top: 0px;"><label style="color: rgb(255,255,255);font-family: Graduate, cursive;">salida html - json</label>
+                    <div style="width: 100%;height: 80%;font-family: Graduate, cursive;">
+                        <ul class="nav nav-tabs" style="background-color: #212529;">
+                            <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-4">HTML</a></li>
+                            <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5">JSON</a></li>
+                        </ul>
+                        <div class="tab-content" style="height: 86%;">
+                            <div class="tab-pane active" role="tabpanel" id="tab-4" style="height: 100%;"><textarea style="width: 100%;height: 100%;"></textarea></div>
+                            <div class="tab-pane" role="tabpanel" id="tab-5" style="height: 100%;width: 100%;"><textarea style="width: 100%;height: 100%;"></textarea></div>
                         </div>
                     </div>
                 </div>
+                <div id="tabla_var" style="width: 50%;padding: 2%;height: 300px;"><label style="padding-left: 2%;font-family: Graduate, cursive;color: rgb(255,255,255);">tabla de variables</label>
+                    <div class="table-responsive table-bordered text-center flex-grow-1" style="width: 100%;background-color: #ffffff;padding: 0px;height: 100%;">
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Linea</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Cell 1</td>
+                                    <td>Cell 2</td>
+                                    <td>Cell 3</td>
+                                </tr>
+                                <tr>
+                                    <td>Cell 3</td>
+                                    <td>Cell 4</td>
+                                    <td>Cell 3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="btn-group d-xl-flex justify-content-xl-center align-items-xl-start" role="group" style="width: 55%;margin: 0px;padding: 0px;margin-left: 21%;margin-top: 2%;margin-bottom: 0px;font-family: Graduate, cursive;"><button class="btn btn-primary" data-bs-hover-animate="pulse" type="button">TRADUCIR CÓDIGO</button></div>
             </div>
         </div>
     </div>
-    <div class="footer-dark">
+    <div class="footer-dark" style="background-color: rgb(27,30,33);">
         <footer>
             <div class="container">
                 <div class="row">
