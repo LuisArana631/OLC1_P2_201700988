@@ -22,27 +22,25 @@
         <div class="container-fluid"><img class="img-fluid" data-bs-hover-animate="rubberBand" style="width: 45px;height: 45px;" src="assets/img/logotrans.png"><a class="navbar-brand" href="#" style="color: rgb(255,255,255);padding: 25px 20px;font-family: 'Encode Sans Expanded', sans-serif;">Traductor C# -Python</a>
             <button
                 data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1" style="width: 331px;background-color: #3b434a;filter: blur(0px) brightness(129%);padding: 2px;margin: 2px 100px;"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon" style="color: rgb(255,255,255);"></span></button>
-                <div class="collapse navbar-collapse text-left justify-content-end" id="navcol-1">
-                    <div class="btn-toolbar">
-                        <div class="btn-group" role="group"><button class="btn btn-primary text-center flex-row-reverse" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Abrir</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button"
-                                style="background-color: rgb(28,86,147);">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Nuevo</button></div>
-                    </div>
+                <div class="collapse navbar-collapse text-left flex-grow-1 justify-content-end" id="navcol-1">
+                    <div class="btn-toolbar"></div>
+                    <div class="btn-group justify-content-center" role="group"><button class="btn btn-primary text-center flex-row-reverse" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Abrir</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button"
+                            style="background-color: rgb(28,86,147);">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Nuevo</button></div>
                 </div>
         </div>
     </nav>
     <div>
-        <ul class="nav nav-tabs nav-justified" style="background-color: #282d32;font-family: Graduate, cursive;">
-            <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-1">Untitled-1</a></li>
-            <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-2">untitled-2</a></li>
+        <ul class="nav nav-tabs" style="background-color: #282d32;font-family: Graduate, cursive;">
+            <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Untitled-1</a></li>
         </ul>
         <div class="tab-content">
-            <div class="tab-pane" role="tabpanel" id="tab-1" style="background-color: #47515b;">
-                <div id="contenido" style="background-color: #47515b;">
-                    <div id="txt-salida"><textarea></textarea></div>
-                    <div id="txt-entrada"><textarea></textarea></div>
+            <div class="tab-pane active" role="tabpanel" id="tab-1" style="background-color: #47515b;">
+                <div id="contenido" style="background-color: #47515b;margin: 0px;">
+                    <div class="float-right flex-grow-1" id="txt-salida" style="width: 570px;height: 54px;margin: 0px;"><textarea class="flex-grow-1"></textarea></div>
+                    <div class="d-flex justify-content-center align-items-start" id="txt-entrada" style="width: 570px;margin: 0px;padding: 0;"><textarea class="flex-grow-1"></textarea></div>
                     <div id="salidas-tab">
                         <div>
-                            <ul class="nav nav-tabs">
+                            <ul class="nav nav-tabs" style="background-color: #212529;">
                                 <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-4">HTML</a></li>
                                 <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5">JSON</a></li>
                             </ul>
@@ -53,49 +51,6 @@
                         </div>
                     </div>
                     <div id="table-variables">
-                        <div class="table-responsive table-bordered text-center" style="width: 100px;background-color: #ffffff;">
-                            <table class="table table-bordered table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Nombre</th>
-                                        <th>Tipo</th>
-                                        <th>Linea</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Cell 1</td>
-                                        <td>Cell 2</td>
-                                        <td>Cell 3</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Cell 3</td>
-                                        <td>Cell 4</td>
-                                        <td>Cell 3</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane active" role="tabpanel" id="tab-2">
-                <div id="contenido-1" style="background-color: #47515b;">
-                    <div id="txt-salida-1"><textarea></textarea></div>
-                    <div id="txt-entrada-1"><textarea></textarea></div>
-                    <div id="salidas-tab-1">
-                        <div>
-                            <ul class="nav nav-tabs">
-                                <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-4">HTML</a></li>
-                                <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5">JSON</a></li>
-                            </ul>
-                            <div class="tab-content">
-                                <div class="tab-pane active" role="tabpanel" id="tab-4"><textarea></textarea></div>
-                                <div class="tab-pane" role="tabpanel" id="tab-5"><textarea></textarea></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="table-variables-1">
                         <div class="table-responsive table-bordered text-center" style="width: 100px;background-color: #ffffff;">
                             <table class="table table-bordered table-sm">
                                 <thead>
