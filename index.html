@@ -19,12 +19,14 @@
 
 <body>
     <nav class="navbar navbar-light navbar-expand-md sticky-top navigation-clean-search" style="background-color: rgb(27,30,33);color: rgb(255,255,255);">
-        <div class="container-fluid"><a class="navbar-brand text-break" href="#" style="color: rgb(255,255,255);padding: 0px;font-family: Graduate, cursive;padding-left: 0px;padding-top: 10px;padding-bottom: 10px;"> <img class="img-fluid" data-bs-hover-animate="rubberBand" style="width: 45px;height: 45px;" src="assets/img/logotrans.png"> Traductor C# -Python</a>
-            <div
-                class="btn-toolbar">
-                <div class="btn-group" role="group" style="font-family: Graduate, cursive;"><button class="btn btn-primary text-center flex-row-reverse" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Abrir</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button"
-                        style="background-color: rgb(28,86,147);">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Nuevo</button></div>
-        </div>
+        <div class="container-fluid">
+            <a class="navbar-brand text-break" href="#" style="color: rgb(255,255,255);padding: 0px;font-family: Graduate, cursive;padding-left: 0px;padding-top: 10px;padding-bottom: 10px;"> <img class="img-fluid" data-bs-hover-animate="rubberBand" style="width: 45px;height: 45px;" src="assets/img/logotrans.png"> Traductor C# -Python</a>
+            <div class="btn-toolbar">
+                <div class="btn-group" role="group" style="font-family: Graduate, cursive;"><button class="btn btn-primary text-center flex-row-reverse" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Abrir</button>
+                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Nuevo</button>
+                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Reportes</button>
+                </div>
+            </div>
         </div>
     </nav>
     <div>
@@ -34,10 +36,8 @@
         <div class="tab-content">
             <div class="tab-pane active" role="tabpanel" id="tab-1" style="background-color: #47515b;height: 866px;">
                 <div class="float-right flex-fill" id="txt-salida" style="height: 500px;width: 50%;padding: 2%;"><label style="font-family: Graduate, cursive;color: rgb(255,255,255);">salida - python</label><textarea class="flex-grow-1" style="width: 100%;height: 95%;" id="txtSalidaP"></textarea></div>
-                <div class="float-left flex-fill"
-                    id="txt-entrada" style="width: 50%;height: 500px;padding: 2%;background-color: #47515b;"><label style="color: rgb(255,255,255);font-family: Graduate, cursive;">entrada - c#</label><textarea class="flex-grow-1" style="width: 100%;height: 95%;" id="txtEntradaC"></textarea></div>
-                <div class="float-right" id="salidas-tab"
-                    style="width: 50%;padding: 2%;height: 314px;padding-top: 0px;"><label style="color: rgb(255,255,255);font-family: Graduate, cursive;">salida html - json</label>
+                <div class="float-left flex-fill" id="txt-entrada" style="width: 50%;height: 500px;padding: 2%;background-color: #47515b;"><label style="color: rgb(255,255,255);font-family: Graduate, cursive;">entrada - c#</label><textarea class="flex-grow-1" style="width: 100%;height: 95%;" id="txtEntradaC"></textarea></div>
+                <div class="float-right" id="salidas-tab" style="width: 50%;padding: 2%;height: 314px;padding-top: 0px;"><label style="color: rgb(255,255,255);font-family: Graduate, cursive;">salida html - json</label>
                     <div style="width: 100%;height: 80%;">
                         <ul class="nav nav-tabs" style="background-color: #212529;font-family: Graduate, cursive;">
                             <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-4">HTML</a></li>
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="tabla_var" style="width: 50%;padding: 2%;height: 300px;"><label style="padding-left: 2%;font-family: Graduate, cursive;color: rgb(255,255,255);">tabla de variables</label>
+                <div id="tabla_var" style="width: 50%;padding: 2%;height: 300px;"><label style="font-family: Graduate, cursive;color: rgb(255,255,255);">tabla de variables</label>
                     <div class="table-responsive table-bordered text-center flex-grow-1" style="width: 100%;background-color: #ffffff;padding: 0px;height: 100%;">
                         <table class="table table-bordered table-sm">
                             <thead>
@@ -84,7 +84,9 @@
                         <h3>Curso</h3>
                         <ul>
                             <li><a href="#">Compiladores 1</a></li>
-                            <li><a href="#"></a></li>
+                            <li>
+                                <a href="#"></a>
+                            </li>
                         </ul>
                     </div>
                     <div class="col-md-6 item text">
@@ -92,8 +94,7 @@
                         <p>Puedes ingresar un código en lenguaje de C#, el cual es traducido al lenguaje Python, generando unos reportes HTML y JSON. Para poder analizar el contenido.</p>
                     </div>
                     <div class="col item social"><a data-bs-hover-animate="swing" href="https://www.facebook.com/luisfer.arana"><i class="icon ion-social-facebook"></i></a><a data-bs-hover-animate="swing" href="https://twitter.com/LuisF631"><i class="icon ion-social-twitter"></i></a>
-                        <a
-                            data-bs-hover-animate="swing" href="https://www.instagram.com/luis_fer631/?hl=es-la"><i class="icon ion-social-instagram"></i></a>
+                        <a data-bs-hover-animate="swing" href="https://www.instagram.com/luis_fer631/?hl=es-la"><i class="icon ion-social-instagram"></i></a>
                     </div>
                 </div>
                 <p class="copyright">Luis Arana © 2020</p>
