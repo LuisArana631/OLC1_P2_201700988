@@ -22,16 +22,16 @@
         <div class="container-fluid">
             <a class="navbar-brand text-break" href="#" style="color: rgb(255,255,255);padding: 0px;font-family: Graduate, cursive;padding-left: 0px;padding-top: 10px;padding-bottom: 10px;"> <img class="img-fluid" data-bs-hover-animate="rubberBand" style="width: 45px;height: 45px;" src="assets/img/logotrans.png"> Traductor C# -Python</a>
             <div class="btn-toolbar">
-                <div class="btn-group" role="group" style="font-family: Graduate, cursive;"><button class="btn btn-primary text-center flex-row-reverse" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Abrir</button>
-                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Nuevo</button>
-                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147);">Reportes</button>
+                <div class="btn-group" role="group" style="width: 100%; font-family: Graduate, cursive;"><input class="btn btn-primary" type="file" id="file-input" data-bs-hover-animate="jello" style="background-color: rgb(28,86,147); width: 70%;"/>
+                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 25%;">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 20%;">Nuevo</button>
+                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 25%;">Reportes</button>
                 </div>
             </div>
         </div>
     </nav>
     <div>
         <ul class="nav nav-tabs" style="background-color: #282d32;font-family: Graduate, cursive;">
-            <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Untitled-1</a></li>
+            <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1" id="tab0">Untitled-1</a></li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" role="tabpanel" id="tab-1" style="background-color: #47515b;height: 866px;">
@@ -106,6 +106,7 @@
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
+    <script src="assets/js/cargaFile.js"></script>
 </body>
 
 </html>
