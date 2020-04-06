@@ -1,30 +1,23 @@
-class token{
-    private tipoToken:tipo;
-    private valor:string;
-    private linea:number;
-
-    public constructor(tipo:tipo, valor:string, linea:number){
+"use strict";
+var token = /** @class */ (function() {
+    function token(tipo, valor, linea) {
         this.tipoToken = tipo;
-        this.valor  = valor;
+        this.valor = valor;
         this.linea = linea;
     }
-
-    public getTipo(){
+    token.prototype.getTipo = function() {
         return this.tipoToken;
-    }
-
-    public getValor(){
+    };
+    token.prototype.getValor = function() {
         return this.valor;
-    }
-
-    public getLinea(){
+    };
+    token.prototype.getLinea = function() {
         return this.valor;
-    }
-
-    public getTipoExtend(){
-        switch(this.tipoToken){
+    };
+    token.prototype.getTipoExtend = function() {
+        switch (this.tipoToken) {
             case tipo.Comentario_Lineal:
-                return "Comentario lineal";                
+                return "Comentario lineal";
             case tipo.Comentario_Multilinea:
                 return "Comentario multilinea";
             case tipo.int:
@@ -112,57 +105,57 @@ class token{
             case tipo.cadena:
                 return "Cadena";
         }
-    }
-}
-
-enum tipo{
+    };
+    return token;
+}());
+var tipo;
+(function(tipo) {
     /* Comentarios */
-    Comentario_Lineal,
-    Comentario_Multilinea,
+    tipo[tipo["Comentario_Lineal"] = 0] = "Comentario_Lineal";
+    tipo[tipo["Comentario_Multilinea"] = 1] = "Comentario_Multilinea";
     /* Pralabras Reservadas */
-    int,
-    double,
-    char,
-    bool,
-    string,
-    void,
-    main,
-    if,
-    else,
-    CONSOLE,
-    WRITE,
-    switch,
-    case,
-    break,
-    for,
-    while,
-    do,
-    return,
-    continue,
+    tipo[tipo["int"] = 2] = "int";
+    tipo[tipo["double"] = 3] = "double";
+    tipo[tipo["char"] = 4] = "char";
+    tipo[tipo["bool"] = 5] = "bool";
+    tipo[tipo["string"] = 6] = "string";
+    tipo[tipo["void"] = 7] = "void";
+    tipo[tipo["main"] = 8] = "main";
+    tipo[tipo["if"] = 9] = "if";
+    tipo[tipo["else"] = 10] = "else";
+    tipo[tipo["CONSOLE"] = 11] = "CONSOLE";
+    tipo[tipo["WRITE"] = 12] = "WRITE";
+    tipo[tipo["switch"] = 13] = "switch";
+    tipo[tipo["case"] = 14] = "case";
+    tipo[tipo["break"] = 15] = "break";
+    tipo[tipo["for"] = 16] = "for";
+    tipo[tipo["while"] = 17] = "while";
+    tipo[tipo["do"] = 18] = "do";
+    tipo[tipo["return"] = 19] = "return";
+    tipo[tipo["continue"] = 20] = "continue";
     /* Token de signos */
-    IGUAL,
-    PUNTO_COMA,
-    COMA,
-    SUMA,
-    RESTA,
-    MULTIPLICACION,
-    DIVISION,
-    AND,
-    OR,
-    NOT,
-    PARENTESIS_ABRE,
-    PARENTESIS_CIERRA,
-    DOS_PUNTOS,
-    LLAVE_ABRE,
-    LLAVE_CIERRA,
-    MAYOR,
-    MENOR,
-    MAYOR_IGUAL,
-    MENOR_IGUAL,
-    DISTINTO,
+    tipo[tipo["IGUAL"] = 21] = "IGUAL";
+    tipo[tipo["PUNTO_COMA"] = 22] = "PUNTO_COMA";
+    tipo[tipo["COMA"] = 23] = "COMA";
+    tipo[tipo["SUMA"] = 24] = "SUMA";
+    tipo[tipo["RESTA"] = 25] = "RESTA";
+    tipo[tipo["MULTIPLICACION"] = 26] = "MULTIPLICACION";
+    tipo[tipo["DIVISION"] = 27] = "DIVISION";
+    tipo[tipo["AND"] = 28] = "AND";
+    tipo[tipo["OR"] = 29] = "OR";
+    tipo[tipo["NOT"] = 30] = "NOT";
+    tipo[tipo["PARENTESIS_ABRE"] = 31] = "PARENTESIS_ABRE";
+    tipo[tipo["PARENTESIS_CIERRA"] = 32] = "PARENTESIS_CIERRA";
+    tipo[tipo["DOS_PUNTOS"] = 33] = "DOS_PUNTOS";
+    tipo[tipo["LLAVE_ABRE"] = 34] = "LLAVE_ABRE";
+    tipo[tipo["LLAVE_CIERRA"] = 35] = "LLAVE_CIERRA";
+    tipo[tipo["MAYOR"] = 36] = "MAYOR";
+    tipo[tipo["MENOR"] = 37] = "MENOR";
+    tipo[tipo["MAYOR_IGUAL"] = 38] = "MAYOR_IGUAL";
+    tipo[tipo["MENOR_IGUAL"] = 39] = "MENOR_IGUAL";
+    tipo[tipo["DISTINTO"] = 40] = "DISTINTO";
     /* Tokens extras */
-    identificador,
-    numero,
-    cadena
-}
-export = token;
+    tipo[tipo["identificador"] = 41] = "identificador";
+    tipo[tipo["numero"] = 42] = "numero";
+    tipo[tipo["cadena"] = 43] = "cadena";
+})(tipo || (tipo = {}));
