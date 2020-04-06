@@ -6,6 +6,12 @@ class scanner{
     private linea:number;
 
     public constructor(entrada:string){
+        entrada += "#";
+        let estado:number = 0;
+        let auxLexico:string = "";
+        let linea:number = 1;
+
+        let caracter:any;
         
     }
 
