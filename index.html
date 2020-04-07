@@ -35,7 +35,7 @@
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" role="tabpanel" id="tab-1" style="background-color: #47515b;height: 866px;">
-                <div class="float-right flex-fill" id="txt-salida" style="height: 500px;width: 50%;padding: 2%;"><label style="font-family: Graduate, cursive;color: rgb(255,255,255);">salida - python</label><textarea readonly class="flex-grow-1" style="width: 100%;height: 95%;" id="txtSalidaP"></textarea></div>
+                <div class="float-right flex-fill" id="txt-salida" style="height: 500px;width: 50%;padding: 2%;"><label style="font-family: Graduate, cursive;color: rgb(255,255,255);">salida - python</label><textarea class="flex-grow-1" style="width: 100%;height: 95%;" id="txtSalidaP"></textarea></div>
                 <div class="float-left flex-fill" id="txt-entrada" style="width: 50%;height: 500px;padding: 2%;background-color: #47515b;"><label style="color: rgb(255,255,255);font-family: Graduate, cursive;">entrada - c#</label><textarea class="flex-grow-1" style="width: 100%;height: 95%;" id="txtEntradaC"></textarea></div>
                 <div class="float-right" id="salidas-tab" style="width: 50%;padding: 2%;height: 314px;padding-top: 0px;"><label style="color: rgb(255,255,255);font-family: Graduate, cursive;">salida html - json</label>
                     <div style="width: 100%;height: 80%;">
@@ -64,7 +64,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="btn-group d-xl-flex justify-content-xl-center align-items-xl-start" role="group" style="width: 55%;margin: 0px;padding: 0px;margin-left: 21%;margin-top: 2%;margin-bottom: 0px;font-family: Graduate, cursive;"><button class="btn btn-primary" data-bs-hover-animate="pulse" type="button">TRADUCIR CÓDIGO</button></div>
+                <div class="btn-group d-xl-flex justify-content-xl-center align-items-xl-start" role="group" style="width: 55%;margin: 0px;padding: 0px;margin-left: 21%;margin-top: 2%;margin-bottom: 0px;font-family: Graduate, cursive;"><button class="btn btn-primary" data-bs-hover-animate="pulse" type="button" id="btnTraducir" >TRADUCIR CÓDIGO</button></div>
             </div>
         </div>
     </div>
@@ -107,6 +107,7 @@
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
     <script src="assets/js/cargaFile.js"></script>
+    <script src="assets/js/scanner.js"></script>
 </body>
 
 </html>

@@ -1,20 +1,21 @@
 "use strict";
-var token = /** @class */ (function() {
+Object.defineProperty(exports, "__esModule", { value: true });
+var token = /** @class */ (function () {
     function token(tipo, valor, linea) {
         this.tipoToken = tipo;
         this.valor = valor;
         this.linea = linea;
     }
-    token.prototype.getTipo = function() {
+    token.prototype.getTipo = function () {
         return this.tipoToken;
     };
-    token.prototype.getValor = function() {
+    token.prototype.getValor = function () {
         return this.valor;
     };
-    token.prototype.getLinea = function() {
+    token.prototype.getLinea = function () {
         return this.valor;
     };
-    token.prototype.getTipoExtend = function() {
+    token.prototype.getTipoExtend = function () {
         switch (this.tipoToken) {
             case tipo.Comentario_Lineal:
                 return "Comentario lineal";
@@ -108,8 +109,9 @@ var token = /** @class */ (function() {
     };
     return token;
 }());
+exports.token = token;
 var tipo;
-(function(tipo) {
+(function (tipo) {
     /* Comentarios */
     tipo[tipo["Comentario_Lineal"] = 0] = "Comentario_Lineal";
     tipo[tipo["Comentario_Multilinea"] = 1] = "Comentario_Multilinea";
@@ -158,4 +160,4 @@ var tipo;
     tipo[tipo["identificador"] = 41] = "identificador";
     tipo[tipo["numero"] = 42] = "numero";
     tipo[tipo["cadena"] = 43] = "cadena";
-})(tipo || (tipo = {}));
+})(tipo = exports.tipo || (exports.tipo = {}));

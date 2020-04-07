@@ -1,4 +1,4 @@
-class token{
+export class token{
     private tipoToken:tipo;
     private valor:string;
     private linea:number;
@@ -112,10 +112,12 @@ class token{
             case tipo.cadena:
                 return "Cadena";
         }
+
     }
+   
 }
 
-enum tipo{
+export enum tipo{
     /* Comentarios */
     Comentario_Lineal,
     Comentario_Multilinea,
@@ -165,4 +167,3 @@ enum tipo{
     numero,
     cadena
 }
-export = token;
