@@ -1,7 +1,9 @@
+/*
 import {tipo} from "./token";
 import {token} from "./token";
-
-class scanner{
+*/
+ class scanner{
+    
     /*
     private listaToken:Array<token>;
     private estado:number;
@@ -9,33 +11,29 @@ class scanner{
     */
 
     startScanner(){
-        console.log("Puto el que lo lea");
-    }
 
-    public constructor(){        
-        
-        let entrada = "#";
+        let entrada;
+        let elementoEntrada = document.getElementById('txtEntradaC');        
+        if(elementoEntrada){
+            entrada = elementoEntrada.innerHTML;                        
+        }
+        entrada += "#";
         let estado:number = 0;
         let auxLexico:string = "";
         let linea:number = 1;
 
-        let caracter:any;
-
-        let elementPuto = document.getElementById('txtSalidaP');
-        if (elementPuto) {
-            elementPuto.innerText = entrada;
-        }        
-
+        let caracter:any;             
         for(let i=0; i<entrada.length; i++){
-            
+            caracter = entrada.charAt(i);
+            console.log(caracter);
         }
-    }
-
-    
+    }    
 
 }
 
-let elementButon = document.getElementById('btnTraducir');
+ let scannerFun = new scanner();
+
+ let elementButon = document.getElementById('btnTraducir');
 if(elementButon){    
-    elementButon.addEventListener('click',  ,false);
+    elementButon.addEventListener('click', scannerFun.startScanner ,false);
 }

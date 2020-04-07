@@ -161,3 +161,4 @@ var tipo;
     tipo[tipo["numero"] = 42] = "numero";
     tipo[tipo["cadena"] = 43] = "cadena";
 })(tipo = exports.tipo || (exports.tipo = {}));
+//# sourceMappingURL=token.js.map

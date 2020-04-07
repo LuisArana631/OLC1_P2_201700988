@@ -1,18 +1,10 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+/*
+import {tipo} from "./token";
+import {token} from "./token";
+*/
 var scanner = /** @class */ (function () {
     function scanner() {
-        var entrada = "#";
-        var estado = 0;
-        var auxLexico = "";
-        var linea = 1;
-        var caracter;
-        var elementPuto = document.getElementById('txtSalidaP');
-        if (elementPuto) {
-            elementPuto.innerText = entrada;
-        }
-        for (var i = 0; i < entrada.length; i++) {
-        }
     }
     /*
     private listaToken:Array<token>;
@@ -20,11 +12,26 @@ var scanner = /** @class */ (function () {
     private linea:number;
     */
     scanner.prototype.startScanner = function () {
-        console.log("Puto el que lo lea");
+        var entrada;
+        var elementoEntrada = document.getElementById('txtEntradaC');
+        if (elementoEntrada) {
+            entrada = elementoEntrada.innerHTML;
+        }
+        entrada += "#";
+        var estado = 0;
+        var auxLexico = "";
+        var linea = 1;
+        var caracter;
+        for (var i = 0; i < entrada.length; i++) {
+            caracter = entrada.charAt(i);
+            console.log(caracter);
+        }
     };
     return scanner;
 }());
+var scannerFun = new scanner();
 var elementButon = document.getElementById('btnTraducir');
 if (elementButon) {
-    elementButon.addEventListener('click', false);
+    elementButon.addEventListener('click', scannerFun.startScanner, false);
 }
+//# sourceMappingURL=scanner.js.map

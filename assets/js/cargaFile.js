@@ -18,7 +18,7 @@ function leerArchivo(e) {
 function mostrarContenido(contenidoFile) {
     var element = document.getElementById('txtEntradaC');
     if (element) {
-        element.value = contenidoFile;
+        element.innerHTML = contenidoFile;
     }
 }
 (_a = document.getElementById('file-input')) === null || _a === void 0 ? void 0 : _a.addEventListener('change', leerArchivo, false);
