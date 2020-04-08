@@ -102,12 +102,19 @@
         </footer>
     </div>
 
-    <script>var exports = {"__esModule": true};</script>
+    <script src="node_modules/systemjs/dist/system.js"></script>
+    <script>
+        SystemJS.config({
+            baseURL: 'assets/js',
+            defaultJSExtensions: true
+        });
+        SystemJS.import('scanner.js');
+    </script>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
     <script src="assets/js/cargaFile.js"></script>
-    <script src="assets/js/scanner.js"></script>
 </body>
 
 </html>

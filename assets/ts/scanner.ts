@@ -1,11 +1,18 @@
 import {token, tipo} from "./token";
 
  class scanner{    
-    private listaToken:Array<token> = new Array;
-    private auxLexico:string = "";
-    private estado:number = 0;
+    private listaToken:Array<token>;
+    private auxLexico:string;
+    private estado:number;
 
-    public startScanner(){
+    constructor(){
+        this.listaToken = new Array;
+        this.auxLexico = "";
+        this.estado = 0;
+    }
+
+    public startScanner():void{        
+
         let entrada;
         let elementoEntrada = document.getElementById('txtEntradaC');
         if(elementoEntrada){
@@ -65,6 +72,8 @@ import {token, tipo} from "./token";
                             linea++;
                         }else if(caracter === " " || caracter === "\t"){
                             //Ignorar                        
+                        }else if(caracter === "#"){
+                            console.log("final");
                         }else{
                             this.addToken(tipo.ERROR_LEXICO, caracter, linea);
                         }
@@ -95,13 +104,25 @@ import {token, tipo} from "./token";
                     break;
             }
         }
-    }
+        
+        let textoSalida = "salida";
+        console.log("mostrando analisis lexico");
 
-    public mostrarAnalisisLexico(){
+        this.listaToken.forEach(item => {            
+            textoSalida += item.getTipoExtend+" -> "+item.Valor+" -> "+item.Linea+"\n";
+            console.log(item.Valor);
+        });
 
-    }
+        let elementButon = document.getElementById('txtSalidaP');
+        if(elementButon){    
+            elementButon.innerHTML = textoSalida;
+        } 
 
-    private esLetra(caracter:any){
+    }    
+
+
+    
+    private esLetra(caracter:any):boolean{
         let ascii = caracter.toUpperCase().charCodeAt(0);
         if(ascii > 64 && ascii < 91){
             return true;
@@ -110,12 +131,12 @@ import {token, tipo} from "./token";
         }
     }
 
-    private addToken(tokenType:tipo, dato:string, linea:number){        
+    private addToken(tokenType:tipo, dato:string, linea:number):void{        
         this.listaToken.push(new token(tokenType,dato,linea));
         this.limpiarVariables();
     }
 
-    private limpiarVariables(){
+    private limpiarVariables():void{
         this.auxLexico = "";
         this.estado = 0;
     }
@@ -124,9 +145,9 @@ import {token, tipo} from "./token";
 
 let scannerFun = new scanner();
 
- let elementButon = document.getElementById('btnTraducir');
+let elementButon = document.getElementById('btnTraducir');
 if(elementButon){    
-    elementButon.addEventListener('click', scannerFun.startScanner ,false);
+    elementButon.addEventListener('click', scannerFun.startScanner ,false);    
 }
 
 

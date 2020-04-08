@@ -6,15 +6,27 @@ var token = /** @class */ (function () {
         this.valor = valor;
         this.linea = linea;
     }
-    token.prototype.getTipo = function () {
-        return this.tipoToken;
-    };
-    token.prototype.getValor = function () {
-        return this.valor;
-    };
-    token.prototype.getLinea = function () {
-        return this.linea;
-    };
+    Object.defineProperty(token.prototype, "Tipo", {
+        get: function () {
+            return this.tipoToken;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(token.prototype, "Valor", {
+        get: function () {
+            return this.valor;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(token.prototype, "Linea", {
+        get: function () {
+            return this.linea;
+        },
+        enumerable: true,
+        configurable: true
+    });
     token.prototype.getTipoExtend = function () {
         switch (this.tipoToken) {
             case 0 /* Comentario_Lineal */:

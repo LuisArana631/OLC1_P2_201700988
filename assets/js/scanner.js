@@ -85,6 +85,9 @@ var scanner = /** @class */ (function () {
                         else if (caracter === " " || caracter === "\t") {
                             //Ignorar                        
                         }
+                        else if (caracter === "#") {
+                            console.log("final");
+                        }
                         else {
                             this.addToken(45 /* ERROR_LEXICO */, caracter, linea);
                         }
@@ -119,8 +122,16 @@ var scanner = /** @class */ (function () {
                     break;
             }
         }
-    };
-    scanner.prototype.mostrarAnalisisLexico = function () {
+        var textoSalida = "salida";
+        console.log("mostrando analisis lexico");
+        this.listaToken.forEach(function (item) {
+            textoSalida += item.getTipoExtend + " -> " + item.Valor + " -> " + item.Linea + "\n";
+            console.log(item.Valor);
+        });
+        var elementButon = document.getElementById('txtSalidaP');
+        if (elementButon) {
+            elementButon.innerHTML = textoSalida;
+        }
     };
     scanner.prototype.esLetra = function (caracter) {
         var ascii = caracter.toUpperCase().charCodeAt(0);

@@ -1,4 +1,4 @@
-class token{
+export class token{
     private tipoToken:tipo;
     private valor:string;
     private linea:number;
@@ -9,22 +9,22 @@ class token{
         this.linea = linea;
     }
 
-    public getTipo():tipo{
+   get Tipo():tipo{
         return this.tipoToken;
     }
 
-    public getValor():string{
+    get Valor():string{
         return this.valor;
     }
 
-    public getLinea():number{
+    get Linea():number{
         return this.linea;
     }
 
     public getTipoExtend():string{
         switch(this.tipoToken){
             case tipo.Comentario_Lineal:
-                return "Comentario lineal";                
+                return "Comentario lineal";
             case tipo.Comentario_Multilinea:
                 return "Comentario multilinea";
             case tipo.int:
@@ -120,8 +120,6 @@ class token{
     }
 
 }
-export {token}
-
 
 export const enum tipo{
     /* Comentarios */
