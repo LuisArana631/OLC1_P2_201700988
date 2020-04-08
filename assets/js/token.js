@@ -13,152 +13,104 @@ var token = /** @class */ (function () {
         return this.valor;
     };
     token.prototype.getLinea = function () {
-        return this.valor;
+        return this.linea;
     };
     token.prototype.getTipoExtend = function () {
         switch (this.tipoToken) {
-            case tipo.Comentario_Lineal:
+            case 0 /* Comentario_Lineal */:
                 return "Comentario lineal";
-            case tipo.Comentario_Multilinea:
+            case 1 /* Comentario_Multilinea */:
                 return "Comentario multilinea";
-            case tipo.int:
+            case 2 /* int */:
                 return "int - Palabra reservada";
-            case tipo.double:
+            case 3 /* double */:
                 return "double - Palabra reservada";
-            case tipo.char:
+            case 4 /* char */:
                 return "char - Palabra reservada";
-            case tipo.bool:
+            case 5 /* bool */:
                 return "bool - Palabra reservada";
-            case tipo.string:
+            case 6 /* string */:
                 return "string - Palabra reservada";
-            case tipo.void:
+            case 7 /* void */:
                 return "void - Palabra reservada";
-            case tipo.main:
+            case 8 /* main */:
                 return "main - Palabra reservada";
-            case tipo.if:
+            case 9 /* if */:
                 return "if - Palabra reservada";
-            case tipo.else:
+            case 10 /* else */:
                 return "else - Palabra reservada";
-            case tipo.CONSOLE:
+            case 11 /* CONSOLE */:
                 return "CONSOLE - Palabra reservada";
-            case tipo.WRITE:
+            case 12 /* WRITE */:
                 return "WRITE - Palabra reservada";
-            case tipo.switch:
+            case 13 /* switch */:
                 return "switch - Palabra reservada";
-            case tipo.case:
+            case 14 /* case */:
                 return "case - Palabras reservada";
-            case tipo.break:
+            case 15 /* break */:
                 return "break - Palabra reservada";
-            case tipo.for:
+            case 16 /* for */:
                 return "for - Palabra reservada";
-            case tipo.while:
+            case 17 /* while */:
                 return "while - Palabra reservada";
-            case tipo.do:
+            case 18 /* do */:
                 return "do - Palabra reservada";
-            case tipo.return:
+            case 19 /* return */:
                 return "return - Palabra reservada";
-            case tipo.continue:
+            case 20 /* continue */:
                 return "continue - Palabra reservada";
-            case tipo.IGUAL:
+            case 21 /* IGUAL */:
                 return "Igual";
-            case tipo.PUNTO_COMA:
+            case 22 /* PUNTO_COMA */:
                 return "Punto y coma";
-            case tipo.COMA:
+            case 23 /* COMA */:
                 return "Coma";
-            case tipo.SUMA:
+            case 24 /* SUMA */:
                 return "Suma";
-            case tipo.RESTA:
+            case 25 /* RESTA */:
                 return "Resta";
-            case tipo.MULTIPLICACION:
+            case 26 /* MULTIPLICACION */:
                 return "Multiplicacion";
-            case tipo.DIVISION:
+            case 27 /* DIVISION */:
                 return "Division";
-            case tipo.AND:
+            case 28 /* AND */:
                 return "And";
-            case tipo.OR:
+            case 29 /* OR */:
                 return "Or";
-            case tipo.NOT:
+            case 30 /* NOT */:
                 return "Not";
-            case tipo.PARENTESIS_ABRE:
+            case 31 /* PARENTESIS_ABRE */:
                 return "Parentesis abre";
-            case tipo.PARENTESIS_CIERRA:
+            case 32 /* PARENTESIS_CIERRA */:
                 return "Parentesis cierra";
-            case tipo.DOS_PUNTOS:
+            case 33 /* DOS_PUNTOS */:
                 return "Dos puntos";
-            case tipo.LLAVE_ABRE:
+            case 34 /* LLAVE_ABRE */:
                 return "Llave abre";
-            case tipo.LLAVE_CIERRA:
+            case 35 /* LLAVE_CIERRA */:
                 return "Llave cierra";
-            case tipo.MAYOR:
+            case 36 /* MAYOR */:
                 return "Mayor";
-            case tipo.MENOR:
+            case 37 /* MENOR */:
                 return "Menor";
-            case tipo.MAYOR_IGUAL:
+            case 38 /* MAYOR_IGUAL */:
                 return "Mayor igual";
-            case tipo.MENOR_IGUAL:
+            case 39 /* MENOR_IGUAL */:
                 return "Menor igual";
-            case tipo.DISTINTO:
+            case 40 /* IGUAL_IGUAL */:
+                return "Doble igual";
+            case 41 /* DISTINTO */:
                 return "Distinto";
-            case tipo.identificador:
+            case 42 /* identificador */:
                 return "Identificador";
-            case tipo.numero:
+            case 43 /* numero */:
                 return "Numero";
-            case tipo.cadena:
+            case 44 /* cadena */:
                 return "Cadena";
+            case 45 /* ERROR_LEXICO */:
+                return "Error lexico";
         }
     };
     return token;
 }());
 exports.token = token;
-var tipo;
-(function (tipo) {
-    /* Comentarios */
-    tipo[tipo["Comentario_Lineal"] = 0] = "Comentario_Lineal";
-    tipo[tipo["Comentario_Multilinea"] = 1] = "Comentario_Multilinea";
-    /* Pralabras Reservadas */
-    tipo[tipo["int"] = 2] = "int";
-    tipo[tipo["double"] = 3] = "double";
-    tipo[tipo["char"] = 4] = "char";
-    tipo[tipo["bool"] = 5] = "bool";
-    tipo[tipo["string"] = 6] = "string";
-    tipo[tipo["void"] = 7] = "void";
-    tipo[tipo["main"] = 8] = "main";
-    tipo[tipo["if"] = 9] = "if";
-    tipo[tipo["else"] = 10] = "else";
-    tipo[tipo["CONSOLE"] = 11] = "CONSOLE";
-    tipo[tipo["WRITE"] = 12] = "WRITE";
-    tipo[tipo["switch"] = 13] = "switch";
-    tipo[tipo["case"] = 14] = "case";
-    tipo[tipo["break"] = 15] = "break";
-    tipo[tipo["for"] = 16] = "for";
-    tipo[tipo["while"] = 17] = "while";
-    tipo[tipo["do"] = 18] = "do";
-    tipo[tipo["return"] = 19] = "return";
-    tipo[tipo["continue"] = 20] = "continue";
-    /* Token de signos */
-    tipo[tipo["IGUAL"] = 21] = "IGUAL";
-    tipo[tipo["PUNTO_COMA"] = 22] = "PUNTO_COMA";
-    tipo[tipo["COMA"] = 23] = "COMA";
-    tipo[tipo["SUMA"] = 24] = "SUMA";
-    tipo[tipo["RESTA"] = 25] = "RESTA";
-    tipo[tipo["MULTIPLICACION"] = 26] = "MULTIPLICACION";
-    tipo[tipo["DIVISION"] = 27] = "DIVISION";
-    tipo[tipo["AND"] = 28] = "AND";
-    tipo[tipo["OR"] = 29] = "OR";
-    tipo[tipo["NOT"] = 30] = "NOT";
-    tipo[tipo["PARENTESIS_ABRE"] = 31] = "PARENTESIS_ABRE";
-    tipo[tipo["PARENTESIS_CIERRA"] = 32] = "PARENTESIS_CIERRA";
-    tipo[tipo["DOS_PUNTOS"] = 33] = "DOS_PUNTOS";
-    tipo[tipo["LLAVE_ABRE"] = 34] = "LLAVE_ABRE";
-    tipo[tipo["LLAVE_CIERRA"] = 35] = "LLAVE_CIERRA";
-    tipo[tipo["MAYOR"] = 36] = "MAYOR";
-    tipo[tipo["MENOR"] = 37] = "MENOR";
-    tipo[tipo["MAYOR_IGUAL"] = 38] = "MAYOR_IGUAL";
-    tipo[tipo["MENOR_IGUAL"] = 39] = "MENOR_IGUAL";
-    tipo[tipo["DISTINTO"] = 40] = "DISTINTO";
-    /* Tokens extras */
-    tipo[tipo["identificador"] = 41] = "identificador";
-    tipo[tipo["numero"] = 42] = "numero";
-    tipo[tipo["cadena"] = 43] = "cadena";
-})(tipo = exports.tipo || (exports.tipo = {}));
-//# sourceMappingURL=token.js.map

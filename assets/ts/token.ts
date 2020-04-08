@@ -1,27 +1,27 @@
-export class token{
+class token{
     private tipoToken:tipo;
     private valor:string;
     private linea:number;
 
-    public constructor(tipo:tipo, valor:string, linea:number){
+    constructor(tipo:tipo, valor:string, linea:number){
         this.tipoToken = tipo;
         this.valor  = valor;
         this.linea = linea;
     }
 
-    public getTipo(){
+    public getTipo():tipo{
         return this.tipoToken;
     }
 
-    public getValor(){
+    public getValor():string{
         return this.valor;
     }
 
-    public getLinea(){
-        return this.valor;
+    public getLinea():number{
+        return this.linea;
     }
 
-    public getTipoExtend(){
+    public getTipoExtend():string{
         switch(this.tipoToken){
             case tipo.Comentario_Lineal:
                 return "Comentario lineal";                
@@ -103,6 +103,8 @@ export class token{
                 return "Mayor igual";
             case tipo.MENOR_IGUAL:
                 return "Menor igual";
+            case tipo.IGUAL_IGUAL:
+                return "Doble igual";
             case tipo.DISTINTO:
                 return "Distinto";
             case tipo.identificador:
@@ -111,13 +113,17 @@ export class token{
                 return "Numero";
             case tipo.cadena:
                 return "Cadena";
+            case tipo.ERROR_LEXICO:
+                return "Error lexico";
         }
 
     }
-   
-}
 
-export enum tipo{
+}
+export {token}
+
+
+export const enum tipo{
     /* Comentarios */
     Comentario_Lineal,
     Comentario_Multilinea,
@@ -142,28 +148,31 @@ export enum tipo{
     return,
     continue,
     /* Token de signos */
-    IGUAL,
-    PUNTO_COMA,
-    COMA,
-    SUMA,
-    RESTA,
-    MULTIPLICACION,
-    DIVISION,
-    AND,
-    OR,
-    NOT,
-    PARENTESIS_ABRE,
-    PARENTESIS_CIERRA,
-    DOS_PUNTOS,
-    LLAVE_ABRE,
-    LLAVE_CIERRA,
-    MAYOR,
-    MENOR,
-    MAYOR_IGUAL,
-    MENOR_IGUAL,
-    DISTINTO,
+    IGUAL,  //=
+    PUNTO_COMA, //;
+    COMA,   //,
+    SUMA,   //+
+    RESTA,  //-
+    MULTIPLICACION, //*
+    DIVISION,   ///
+    AND,    //&&
+    OR, //||
+    NOT,    //!
+    PARENTESIS_ABRE,    //(
+    PARENTESIS_CIERRA,  //)
+    DOS_PUNTOS, //:
+    LLAVE_ABRE, //{
+    LLAVE_CIERRA,   //}
+    MAYOR,  //>
+    MENOR,  //<
+    MAYOR_IGUAL,    //>=
+    MENOR_IGUAL,    //<=
+    IGUAL_IGUAL,    //==
+    DISTINTO,   //!=
     /* Tokens extras */
     identificador,
     numero,
-    cadena
+    cadena,
+    /* Error lexico */
+    ERROR_LEXICO
 }
