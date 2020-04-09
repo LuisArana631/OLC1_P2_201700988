@@ -2,11 +2,13 @@ export class token{
     private tipoToken:tipo;
     private valor:string;
     private linea:number;
+    private columna:number;
 
-    constructor(tipo:tipo, valor:string, linea:number){
+    constructor(tipo:tipo, valor:string, linea:number, columna:number){
         this.tipoToken = tipo;
         this.valor  = valor;
         this.linea = linea;
+        this.columna = columna;
     }
 
    get Tipo():tipo{
@@ -19,6 +21,10 @@ export class token{
 
     get Linea():number{
         return this.linea;
+    }
+
+    get Colummna():number{
+        return this.columna;
     }
 
     public getTipoExtend():string{
@@ -105,8 +111,10 @@ export class token{
                 return "Menor igual";
             case tipo.IGUAL_IGUAL:
                 return "Doble igual";
-            case tipo.DISTINTO:
+            case tipo.DISTINTO:            
                 return "Distinto";
+            case tipo.PUNTO:
+                return "Punto";
             case tipo.identificador:
                 return "Identificador";
             case tipo.numero:
@@ -166,7 +174,8 @@ export const enum tipo{
     MAYOR_IGUAL,    //>=
     MENOR_IGUAL,    //<=
     IGUAL_IGUAL,    //==
-    DISTINTO,   //!=
+    DISTINTO,
+    PUNTO,   //!=
     /* Tokens extras */
     identificador,
     numero,

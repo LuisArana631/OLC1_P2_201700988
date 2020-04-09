@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var token = /** @class */ (function () {
-    function token(tipo, valor, linea) {
+    function token(tipo, valor, linea, columna) {
         this.tipoToken = tipo;
         this.valor = valor;
         this.linea = linea;
+        this.columna = columna;
     }
     Object.defineProperty(token.prototype, "Tipo", {
         get: function () {
@@ -23,6 +24,13 @@ var token = /** @class */ (function () {
     Object.defineProperty(token.prototype, "Linea", {
         get: function () {
             return this.linea;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(token.prototype, "Colummna", {
+        get: function () {
+            return this.columna;
         },
         enumerable: true,
         configurable: true
@@ -113,13 +121,15 @@ var token = /** @class */ (function () {
                 return "Doble igual";
             case 41 /* DISTINTO */:
                 return "Distinto";
-            case 42 /* identificador */:
+            case 42 /* PUNTO */:
+                return "Punto";
+            case 43 /* identificador */:
                 return "Identificador";
-            case 43 /* numero */:
+            case 44 /* numero */:
                 return "Numero";
-            case 44 /* cadena */:
+            case 45 /* cadena */:
                 return "Cadena";
-            case 45 /* ERROR_LEXICO */:
+            case 46 /* ERROR_LEXICO */:
                 return "Error lexico";
         }
     };
