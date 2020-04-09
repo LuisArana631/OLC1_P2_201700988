@@ -7,6 +7,13 @@ var scanner = /** @class */ (function () {
         this.auxLexico = "";
         this.estado = 0;
     }
+    Object.defineProperty(scanner.prototype, "ListaToken", {
+        get: function () {
+            return this.listaToken;
+        },
+        enumerable: true,
+        configurable: true
+    });
     scanner.prototype.startScanner = function () {
         var entrada;
         var elementoEntrada = document.getElementById('txtEntradaC');
@@ -375,11 +382,9 @@ var scanner = /** @class */ (function () {
     return scanner;
 }());
 function iniciarScanner() {
-    exports.scannerFun = new scanner();
-    exports.scannerFun.startScanner();
-    exports.scannerFun.mostrarAnalisisLexico();
+    var scannerFun = new scanner();
+    scannerFun.startScanner();
+    scannerFun.mostrarAnalisisLexico();
+    return scannerFun.ListaToken;
 }
-var elementButon = document.getElementById('btnTraducir');
-if (elementButon) {
-    elementButon.addEventListener('click', iniciarScanner, false);
-}
+exports.iniciarScanner = iniciarScanner;

@@ -10,6 +10,10 @@ import {token, tipo} from "./token";
         this.auxLexico = "";
         this.estado = 0;        
     }
+
+    get ListaToken():Array<token>{
+        return this.listaToken;
+    }
     
     public startScanner():void{        
 
@@ -330,16 +334,14 @@ import {token, tipo} from "./token";
 }
 
 
-export let scannerFun ;
-function iniciarScanner(){
-    scannerFun = new scanner();
+
+export function iniciarScanner(){
+    let scannerFun = new scanner();
     scannerFun.startScanner();
     scannerFun.mostrarAnalisisLexico();
+
+    return scannerFun.ListaToken;
 }
 
 
 
-let elementButon = document.getElementById('btnTraducir');
-if(elementButon){    
-    elementButon.addEventListener('click', iniciarScanner ,false);    
-}
