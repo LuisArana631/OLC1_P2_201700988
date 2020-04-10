@@ -52,10 +52,10 @@ var scanner = /** @class */ (function () {
                         this.addToken(23 /* COMA */, caracter, linea, columna);
                     }
                     else if (asciiChar === 43) { //Char +
-                        this.addToken(24 /* SUMA */, caracter, linea, columna);
+                        this.estado = 16;
                     }
                     else if (asciiChar === 45) { //Char -
-                        this.addToken(25 /* RESTA */, caracter, linea, columna);
+                        this.estado = 17;
                     }
                     else if (asciiChar === 42) { //Char *
                         this.addToken(26 /* MULTIPLICACION */, caracter, linea, columna);
@@ -109,7 +109,7 @@ var scanner = /** @class */ (function () {
                         //Ignorar caracter final
                     }
                     else {
-                        this.addToken(46 /* ERROR_LEXICO */, caracter, linea, columna);
+                        this.addToken(48 /* ERROR_LEXICO */, caracter, linea, columna);
                     }
                     break;
                 case 1:
@@ -129,7 +129,7 @@ var scanner = /** @class */ (function () {
                 case 2:
                     if (asciiChar === 34) { //Char "
                         this.auxLexico += caracter;
-                        this.addToken(45 /* cadena */, this.auxLexico, linea, columna);
+                        this.addToken(47 /* cadena */, this.auxLexico, linea, columna);
                     }
                     else {
                         this.auxLexico += caracter;
@@ -151,7 +151,7 @@ var scanner = /** @class */ (function () {
                         this.addToken(28 /* AND */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(46 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        this.addToken(48 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -161,7 +161,7 @@ var scanner = /** @class */ (function () {
                         this.addToken(29 /* OR */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(46 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        this.addToken(48 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -282,7 +282,7 @@ var scanner = /** @class */ (function () {
                         this.auxLexico += caracter;
                     }
                     else {
-                        this.addToken(43 /* identificador */, this.auxLexico, linea, columna);
+                        this.addToken(45 /* identificador */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -295,7 +295,7 @@ var scanner = /** @class */ (function () {
                         this.estado = 13;
                     }
                     else {
-                        this.addToken(44 /* numero */, this.auxLexico, linea, columna);
+                        this.addToken(46 /* numero */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -319,7 +319,7 @@ var scanner = /** @class */ (function () {
                         this.estado = 15;
                     }
                     else {
-                        this.addToken(46 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        this.addToken(48 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -337,7 +337,27 @@ var scanner = /** @class */ (function () {
                         this.auxLexico += caracter;
                     }
                     else {
-                        this.addToken(44 /* numero */, this.auxLexico, linea, columna);
+                        this.addToken(46 /* numero */, this.auxLexico, linea, columna);
+                        i--;
+                    }
+                    break;
+                case 16:
+                    if (asciiChar === 43) { //Char +
+                        this.auxLexico += caracter;
+                        this.addToken(43 /* INCREMENTO */, this.auxLexico, linea, columna);
+                    }
+                    else {
+                        this.addToken(24 /* SUMA */, this.auxLexico, linea, columna);
+                        i--;
+                    }
+                    break;
+                case 17:
+                    if (asciiChar === 45) { //Char -
+                        this.auxLexico += caracter;
+                        this.addToken(44 /* DECREMENTO */, this.auxLexico, linea, columna);
+                    }
+                    else {
+                        this.addToken(25 /* RESTA */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;

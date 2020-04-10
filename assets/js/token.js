@@ -123,13 +123,17 @@ var token = /** @class */ (function () {
                 return "Distinto";
             case 42 /* PUNTO */:
                 return "Punto";
-            case 43 /* identificador */:
+            case 43 /* INCREMENTO */:
+                return "Incremento";
+            case 44 /* DECREMENTO */:
+                return "Decremento";
+            case 45 /* identificador */:
                 return "Identificador";
-            case 44 /* numero */:
+            case 46 /* numero */:
                 return "Numero";
-            case 45 /* cadena */:
+            case 47 /* cadena */:
                 return "Cadena";
-            case 46 /* ERROR_LEXICO */:
+            case 48 /* ERROR_LEXICO */:
                 return "Error lexico";
         }
     };

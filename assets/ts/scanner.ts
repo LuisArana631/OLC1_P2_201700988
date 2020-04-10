@@ -52,9 +52,9 @@ import {token, tipo} from "./token";
                 }else if(asciiChar === 44){ //Char ,
                     this.addToken(tipo.COMA, caracter, linea, columna);
                 }else if(asciiChar === 43){ //Char +
-                    this.addToken(tipo.SUMA, caracter, linea, columna);
+                    this.estado = 16;                                        
                 }else if(asciiChar === 45){  //Char -
-                    this.addToken(tipo.RESTA, caracter, linea, columna);
+                    this.estado = 17;                    
                 }else if(asciiChar === 42){ //Char *
                     this.addToken(tipo.MULTIPLICACION, caracter, linea, columna);
                 }else if(asciiChar === 38){ // Char &
@@ -284,6 +284,24 @@ import {token, tipo} from "./token";
                     }else{
                         this.addToken(tipo.numero, this.auxLexico, linea,columna);
                         i--;                        
+                    }
+                    break;
+                case 16:
+                    if(asciiChar === 43){   //Char +
+                        this.auxLexico += caracter;                        
+                        this.addToken(tipo.INCREMENTO, this.auxLexico, linea, columna);
+                    }else{
+                        this.addToken(tipo.SUMA, this.auxLexico, linea, columna);
+                        i--;
+                    }
+                    break;
+                case 17:
+                    if(asciiChar === 45){   //Char -
+                        this.auxLexico += caracter;                        
+                        this.addToken(tipo.DECREMENTO, this.auxLexico, linea, columna);
+                    }else{
+                        this.addToken(tipo.RESTA, this.auxLexico, linea, columna);
+                        i--;
                     }
                     break;
             }

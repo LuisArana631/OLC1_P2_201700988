@@ -115,6 +115,10 @@ export class token{
                 return "Distinto";
             case tipo.PUNTO:
                 return "Punto";
+            case tipo.INCREMENTO:
+                return "Incremento";
+            case tipo.DECREMENTO:
+                return "Decremento";
             case tipo.identificador:
                 return "Identificador";
             case tipo.numero:
@@ -176,6 +180,8 @@ export const enum tipo{
     IGUAL_IGUAL,    //==
     DISTINTO,
     PUNTO,   //!=
+    INCREMENTO, //++
+    DECREMENTO, //--
     /* Tokens extras */
     identificador,
     numero,
