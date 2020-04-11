@@ -16,19 +16,24 @@ class parser{
         this.listaVariables = new Array;
     }
 
-    public startParse():void{       
+    public startParse():void{
         let estado:number = 0;
         let tipoActual:string = "";
         let idActual:Array<string> = new Array;
         let esMain:boolean = false;
+        let esRepeticion:boolean = false;
+        let esDoWhile:boolean = false;
 
         console.log("cantidad de tokens: " + this.auxListaTokens.length);
         this.auxListaTokens.forEach(item => {
+          if(item.Tipo === tipo.ERROR_LEXICO){
+            //Ignorar
+          }else{
             switch(estado){
                 case 0: //Estado inicial para encontrar que hacer
                     if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
-                    }else if(this.esImprimir(item)){    //Si es console ir al estado 1    
+                    }else if(this.esImprimir(item)){    //Si es console ir al estado 1
                         estado = 1;
                     }else if(this.esSentenciaRepeticion(item)){ //Si es sentencia de repeticion ir a estado 2 agregar palabra si es for o while, si es do ir a estado 7
                         if(item.Tipo === tipo.for){
@@ -41,27 +46,59 @@ class parser{
                             this.traduccionPyton.push("while True");
                             estado = 8;
                         }
+                        esRepeticion = true;
                     }else if(this.esSentenciaControl(item)){    //Si es sentencia de control ir a estado 3
                         if(item.Tipo === tipo.if){
                             this.traduccionPyton.push(item.Valor);
-                            estado = 3;
+                            if(esDoWhile){
+                                estado = 59;
+                            }else{
+                                estado = 3;                            
+                            }                            
                         }else{
                             this.traduccionPyton.push("def switch")
-                            estado = 10;
-                        }                        
+                            estado = 36;
+                        }
                     }else if(this.esMetodo(item)){  //Cambiar la palabra void por def e ir al estado 4
                         this.traduccionPyton.push("def");
                         estado = 4;
                     }else if(this.esTipoDato(item)){    //Ir al estado 5 si es un tipo de dato
                         estado = 5;
                         tipoActual = item.Valor;
+                    }else if(item.Tipo === tipo.LLAVE_CIERRA){
+                        if(esRepeticion){
+                            esRepeticion = false;
+                        }else if(esMain){
+                            this.traduccionPyton.push("if_name_=\"_main_\":");
+                            this.traduccionPyton.push(" main()");
+                            esMain = false;
+                        }
+                    }else if(item.Tipo === tipo.else){
+                        this.traduccionPyton.push("elif ");
+                        estado = 54;
+                    }else if(item.Tipo === tipo.return){
+                        estado = 56;
+                    }else if(item.Tipo === tipo.break){
+                        if(esRepeticion){
+                            this.traduccionPyton.push("break");
+                        }else{
+                            let error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
+                            this.addError(item, error)
+                        }                        
+                    }else if(item.Tipo === tipo.continue){
+                        if(esRepeticion){
+                            this.traduccionPyton.push("continue");
+                        }else{
+                            let error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
+                            this.addError(item, error)
+                        }                        
                     }else{
                         let error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
                         this.addError(item, error)
                     }
                     break;
                 case 1: //Manejar el imprimir consola
-                    if(item.Tipo === tipo.PUNTO){   //Debemos encontrar un punto para poder avanzar al estado 6                        
+                    if(item.Tipo === tipo.PUNTO){   //Debemos encontrar un punto para poder avanzar al estado 6
                         estado = 6;
                     }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
@@ -96,7 +133,7 @@ class parser{
                             esMain = true;
                         }
                         estado = 11;
-                        this.traduccionPyton.push(item.Valor);                
+                        this.traduccionPyton.push(item.Valor);
                     }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
                     }else{
@@ -125,7 +162,7 @@ class parser{
                         let error = "Se esperaba un (Write) para acceder escribir en consola pero se encontro (" + item.getTipoExtend() + ")";
                         this.addError(item,error);
                     }
-                    break;  
+                    break;
                 case 7: //Manejar while
                     if(item.Tipo === tipo.PARENTESIS_ABRE){
                         estado  = 14;
@@ -149,10 +186,10 @@ class parser{
                     break;
                 case 9: //Manejar for (parametros)
                     if(item.Tipo === tipo.int){
-                        estado = 16;                        
+                        estado = 16;
                     }else if(item.Tipo === tipo.identificador){
                         estado = 17;
-                        this.listaVariables.push(new variableItem(item.Valor,"undefined","int"));
+                        this.traduccionPyton.push("for " + item.Valor + " in range(");
                     }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
                     }else{
@@ -182,14 +219,14 @@ class parser{
                         this.addError(item,error);
                     }
                     break;
-                case 12:
-                    if(item.Tipo === tipo.PARENTESIS_ABRE){ //Encontramos una funcion 
+                case 12: //Encontramos un tipo de dato y necesitamos saber si es variable o funcion
+                    if(item.Tipo === tipo.PARENTESIS_ABRE){ //Encontramos una funcion
                         estado = 20;
                         this.traduccionPyton.push("def "+idActual[0]+"(");
                         idActual.pop();
-                    }else if(item.Tipo === tipo.COMA){ //Se encontra una lista de identificadores
+                    }else if(item.Tipo === tipo.COMA){ //Se encontra una lista de identificadores                        
                         estado = 21;
-                    }else if(item.Tipo === tipo.IGUAL){ //Se encontro una asignacion 
+                    }else if(item.Tipo === tipo.IGUAL){ //Se encontro una asignacion
                         estado = 22;
                     }else if(item.Tipo === tipo.PUNTO_COMA){ //Se encontro una variable sin dato
                         this.traduccionPyton.push("var "+idActual[0]);
@@ -201,7 +238,7 @@ class parser{
                     }else{
                         let error = "Se esperaba un ((|,|=|;) pero se encontro (" + item.getTipoExtend() + ")";
                         this.addError(item,error);
-                    }                    
+                    }
                     break;
                 case 13: //Continuar Console.Write()
                     if(item.Tipo === tipo.PARENTESIS_ABRE){ //Encontramos una funcion
@@ -213,7 +250,7 @@ class parser{
                         this.addError(item,error);
                     }
                     break;
-                case 14: //Ya estamos dentro de los parametros del while 
+                case 14: //Ya estamos dentro de los parametros del while
                     if(item.Tipo === tipo.identificador || item.Tipo === tipo.numero){
                         estado = 24;
                         this.traduccionPyton.push(item.Valor);
@@ -225,12 +262,13 @@ class parser{
                     }
                     break;
                 case 15:    //Estamos dentro del do-while
-
+                    esDoWhile = true;
+                    estado = 0;
                     break;
                 case 16:    //Estamos en el for encontramos un int
-                    if(item.Tipo === tipo.identificador){                        
-                        estado = 17;              
-                        this.listaVariables.push(new variableItem(item.Valor,"undefined","int"));
+                    if(item.Tipo === tipo.identificador){
+                        estado = 17;
+                        this.traduccionPyton.push("for " + item.Valor + " in range(");
                     }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
                     }else{
@@ -254,7 +292,7 @@ class parser{
                         estado = 26;
                     }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
-                    }else{  
+                    }else{
                         let error = "Se esperaba un signo relacional para manejar el if for pero se encontro (" + item.getTipoExtend() + ")";
                         this.addError(item,error);
                     }
@@ -266,7 +304,7 @@ class parser{
                             estado = 27;
                         }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                             this.addComentario(item);
-                        }else{  
+                        }else{
                             let error = "Se esperaba un ) para manejar el main pero se encontro (" + item.getTipoExtend() + ")";
                             this.addError(item,error);
                         }
@@ -275,35 +313,472 @@ class parser{
                             this.traduccionPyton.push(item.Valor);
                             estado = 27;
                         }else if(this.esTipoDato(item)){
-                            estado = 28;                            
+                            estado = 28;
                         }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                             this.addComentario(item);
-                        }else{  
+                        }else{
                             let error = "Se esperaba un ()|Tipo de dato) para manejar la funcion pero se encontro (" + item.getTipoExtend() + ")";
                             this.addError(item,error);
                         }
                     }
                     break;
-                case 20:
+                case 20: //Esto es una funcion
                     if(item.Tipo === tipo.PARENTESIS_CIERRA){
                         this.traduccionPyton.push(item.Valor);
+                        estado = 38;
                     }else if(this.esTipoDato(item)){
                         estado = 29;
                     }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
-                    }else{  
+                    }else{
                         let error = "Se esperaba un ()|Tipo de dato) para manejar el ciclo for pero se encontro (" + item.getTipoExtend() + ")";
                         this.addError(item,error);
                     }
                     break;
-                case 21:
-                    
+                case 21: //Si encontramos una lista de identificadores
+                    if(item.Tipo === tipo.identificador){//Si es identificador ir al siguiente estado
+                      estado = 30;
+                      idActual.push(item.Valor);
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (identificador) para la lista de identificadores pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
                     break;
-            }            
+                case 22: //Asignacion de las variable
+                    if(item.Tipo === tipo.cadena || item.Tipo === tipo.numero || item.Tipo === tipo.identificador){
+                        let variables:string = "var ";
+                        let conteo:number = 1;
+                        idActual.forEach(idItem => {
+                            if(conteo < idActual.length){
+                                variables += idItem + ","
+                            }else{
+                                variables += idItem;
+                            }
+                            this.listaVariables.push(new variableItem(idItem,item.Valor,tipoActual));
+                            conteo++;
+                        });
+                        variables += " = " + item.Valor;
+                        this.traduccionPyton.push(variables);
+                        estado = 31;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (cadena|numero|identificador) para manejar las variables pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 23://Parametro del console.write()
+                    if(item.Tipo === tipo.cadena || item.Tipo === tipo.identificador||item.Tipo === tipo.numero){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 32;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (cadena|identificador) para manejar el ciclo for pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 24: //Validar funcione en el while
+                    if(this.esRelacional(item)){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 33;                        
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (signo relacional) para manejar el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 25: //Encontrar el numero de la variable en el for
+                    if(item.Tipo === tipo.numero){
+                        estado = 34;
+                        this.traduccionPyton.push(item.Valor);
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (numero) para manejar el ciclo for pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 26:    //Validar if
+                    if(item.Tipo  === tipo.identificador || item.Tipo === tipo.numero || item.Tipo === tipo.cadena){
+                        estado = 35;
+                        this.traduccionPyton.push(item.Valor);
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (identificador|numero|cadena) para manejar la condicion if pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 27:    //Terminar con la funcion def
+                    if(item.Tipo === tipo.LLAVE_ABRE){
+                        this.traduccionPyton.push(":");
+                        estado = 0;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (identificador|numero|cadena) para manejar la condicion pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 28: //Debemos encontrar una variable en el void
+                    if(item.Tipo === tipo.identificador){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 37;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (identificador|numero|cadena) para manejar la condicion pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 29: //Debemos encontrar el identificador
+                    if(item.Tipo === tipo.identificador){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 39;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (identificador|numero|cadena) para manejar la condicion pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 30: //Se debe encontrar una coma y regresar al estado de identificador
+                    if(item.Tipo === tipo.COMA){
+                        estado = 21;
+                        this.traduccionPyton.push(item.Valor);
+                    }else if(item.Tipo === tipo.IGUAL){
+                        estado = 22;
+                        this.traduccionPyton.push(item.Valor);
+                    }else if(item.Tipo === tipo.PUNTO_COMA){
+                        estado = 0;
+                        let variables:string = "var ";
+                        let conteo:number = 1;
+                        idActual.forEach(idItem => {
+                            if(conteo < idActual.length){
+                                variables += idItem + ","
+                            }else{
+                                variables += idItem;
+                            }
+                            this.listaVariables.push(new variableItem(idItem,item.Valor,tipoActual));
+                            conteo++;
+                        });
+                        this.traduccionPyton.push(variables);
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (,|=|;) para manejar la condicion if pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 31:    //Necesitamos un punto y coma para terminar las variables
+                    if(item.Tipo === tipo.PUNTO_COMA){
+                        estado = 0;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (;) para manejar las variables pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 32: //Varias cadenas concatenadas o parentesis final
+                    if(item.Tipo === tipo.SUMA){
+                        this.traduccionPyton.push(",");
+                        estado = 23;
+                    }else if(item.Tipo === tipo.PARENTESIS_CIERRA){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 40;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (+|)) para manejar Console.Write() pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 33:    //Encontrar un identificador
+                    if(item.Tipo === tipo.identificador){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 41;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (identificador) para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 34: //Terminar la primer sentencia del for (int i=0;)
+                    if(item.Tipo === tipo.PUNTO_COMA){
+                        estado = 42;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (;) para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 35:    //Validar if con más contenido
+                    if(item.Tipo === tipo.OR || item.Tipo === tipo.AND){
+                        estado = 10;
+                    }else if(item.Tipo === tipo.PARENTESIS_CIERRA){
+                        estado = 38;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un ()|OR|AND) para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 36:    //Para controlar el def switch
+
+                    break;
+                case 37: //Para la declaracion de parametros de funcion void
+                    if(item.Tipo === tipo.COMA){
+                        this.traduccionPyton.push(item.Valor);
+                        estado =43;
+                    }else if(item.Tipo === tipo.PARENTESIS_CIERRA){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 38;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (,) para manejar la funcion pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 38:    //Terminar la declaracion de un void
+                    if(item.Tipo === tipo.LLAVE_ABRE){
+                        this.traduccionPyton.push(":");
+                        estado = 0;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (}) iniciar segmento del void pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 39:    //Manejar los parametros de funcion por tipo de dato
+                    if(item.Tipo === tipo.COMA){
+                        estado = 44;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (,) para manejar parametros de funcion pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 40:    //Terminar la sentencia de console.write
+                    if(item.Tipo === tipo.PUNTO_COMA){
+                        estado = 0;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (;) para terminar el Console.Write pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 41:    //Terminar el ciclo while con )
+                    if(tipo.PARENTESIS_CIERRA){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 45;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un ()) para manejar el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 42:    //Encontrar un identificador del for(int i=0; i <- ese dato)
+                    if(item.Tipo === tipo.identificador){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 46;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (identificador) para manejar el ciclo for pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 43:    //Controlar los parametros 
+                    if(this.esTipoDato(item)){
+                        estado = 28;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (tipo de dato) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 44:    //Controlar los parametros
+                    if(this.esTipoDato(item)){
+                        estado = 28;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (tipo de dato) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 45:    //Encontrar llave de apertura para terminar de traducir el ciclo while
+                    if(item.Tipo === tipo.LLAVE_ABRE){
+                        this.traduccionPyton.push(":");
+                        estado = 0;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (tipo de dato) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }                    
+                    break;
+                case 46:    //Encontrar variable del for segundo parametro
+                    if(item.Tipo === tipo.identificador){
+                        estado = 47;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (tipo de dato) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }   
+                    break;
+                case 47: //Encontrar condicion del for
+                    if(item.Tipo === tipo.MAYOR || item.Tipo === tipo.MENOR ||item.Tipo === tipo.MAYOR_IGUAL || item.Tipo === tipo.MENOR_IGUAL){
+                        estado = 48;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (tipo de dato) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;  
+                case 48: //Encontrar limite del for
+                    if(item.Tipo === tipo.identificador || item.Tipo === tipo.numero){
+                        this.traduccionPyton.push(","+item.Valor+")");
+                        estado = 49;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (tipo de dato) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 49: //Econtrar punto y coma para el tipo for
+                    if(item.Tipo === tipo.PUNTO_COMA){
+                        this.traduccionPyton.push(":");
+                        estado = 50;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (;) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 50: //Encontrar identificador del ultimo parametro for
+                    if(item.Tipo === tipo.identificador){
+                        estado = 51;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (identificador) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 51:
+                    if(item.Tipo == tipo.DECREMENTO || item.Tipo === tipo.INCREMENTO){
+                        estado = 52;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (++|--) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 52: 
+                    if(item.Tipo === tipo.PARENTESIS_CIERRA){
+                        estado = 53;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un ) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 53:
+                    if(item.Tipo === tipo.LLAVE_ABRE){
+                        estado = 0;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un { para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 54:
+                    if(item.Tipo === tipo.if){
+                        estado = 55;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un if para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 55:
+                    if(item.Tipo === tipo.PARENTESIS_ABRE){
+                        estado = 10;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un ( para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 56:
+                    if(item.Tipo === tipo.PUNTO_COMA){
+                        this.traduccionPyton.push("return");
+                        estado = 0;
+                    }else if(item.Tipo === tipo.numero || item.Tipo === tipo.identificador || item.Tipo === tipo.cadena){
+                        this.traduccionPyton.push("return "+item.Valor);
+                        estado = 57;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (;) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 57:
+                    if(item.Tipo === tipo.SUMA || item.Tipo === tipo.RESTA || item.Tipo === tipo.DIVISION || item.Tipo === tipo.MULTIPLICACION){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 58;
+                    }else if(item.Tipo === tipo.PUNTO_COMA){
+                        estado = 0;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (+|-|/|*|;) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 58:
+                    if(item.Tipo === tipo.numero || item.Tipo === tipo.identificador || item.Tipo === tipo.cadena){
+                        this.traduccionPyton.push(item.Valor);
+                        estado = 57;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);                        
+                    }else{
+                        let error = "Se esperaba un (;) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+            }
+          }
         });
     }
 
-    private addError(tokenActual:token, tipoError:string):void{        
+
+    private addError(tokenActual:token, tipoError:string):void{
         this.listaErrores.push(new errorSintactico(tokenActual.Valor, tokenActual.Linea, tokenActual.Colummna, tipoError));
     }
 
@@ -312,18 +787,18 @@ class parser{
         if(tokenActual.Tipo === tipo.Comentario_Lineal){
             cadena = tokenActual.Valor.replace("//","#");
         }else{
-            cadena = tokenActual.Valor.replace("/*","'''");            
-            cadena = tokenActual.Valor.replace("*/","'''"); 
+            cadena = tokenActual.Valor.replace("/*","'''");
+            cadena = tokenActual.Valor.replace("*/","'''");
         }
         this.traduccionPyton.push(cadena);
     }
 
     private esRelacional(tokenActual:token):boolean{
         if(tokenActual.Tipo === tipo.MAYOR || tokenActual.Tipo === tipo.MENOR || tokenActual.Tipo === tipo.MAYOR_IGUAL || tokenActual.Tipo === tipo.MENOR_IGUAL || tokenActual.Tipo === tipo.DISTINTO || tokenActual.Tipo === tipo.IGUAL_IGUAL){
-            return true;            
+            return true;
         }
         return false;
-        
+
     }
 
     private esComentario(tokenActual:token):boolean{
@@ -373,10 +848,10 @@ class parser{
 export function iniciarParser(){
     let parserFun = new parser();
 
-    parserFun.startParse();    
-}   
+    parserFun.startParse();
+}
 
 let elementButon = document.getElementById('btnTraducir');
-if(elementButon){    
-    elementButon.addEventListener('click', iniciarParser ,false);    
+if(elementButon){
+    elementButon.addEventListener('click', iniciarParser ,false);
 }
