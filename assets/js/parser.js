@@ -18,9 +18,12 @@ var parser = /** @class */ (function () {
         var esMain = false;
         var esRepeticion = false;
         var esDoWhile = false;
+        var esSwitch = false;
+        var switchActual = "";
+        var sentenciaTraducia = "";
         console.log("cantidad de tokens: " + this.auxListaTokens.length);
         this.auxListaTokens.forEach(function (item) {
-            if (item.Tipo === 48 /* ERROR_LEXICO */) {
+            if (item.Tipo === 49 /* ERROR_LEXICO */) {
                 //Ignorar
             }
             else {
@@ -34,43 +37,46 @@ var parser = /** @class */ (function () {
                         }
                         else if (_this.esSentenciaRepeticion(item)) { //Si es sentencia de repeticion ir a estado 2 agregar palabra si es for o while, si es do ir a estado 7
                             if (item.Tipo === 16 /* for */) {
-                                _this.traduccionPyton.push(item.Valor); //Ir a estado 2 para manejar for
+                                sentenciaTraducia = "for"; //Ir a estado 2 para manejar for
                                 estado = 2;
                             }
                             else if (item.Tipo === 17 /* while */) { //Ir a estado 7 para manejar while
-                                _this.traduccionPyton.push(item.Valor);
-                                estado = 7;
+                                sentenciaTraducia = "while ";
+                                if (esDoWhile) {
+                                    estado = 15;
+                                    esDoWhile = false;
+                                }
+                                else {
+                                    estado = 7;
+                                }
                             }
                             else { //Ir a estado 8 para manejar do while
-                                _this.traduccionPyton.push("while True");
+                                sentenciaTraducia = "while True";
                                 estado = 8;
+                                esDoWhile = true;
                             }
                             esRepeticion = true;
                         }
                         else if (_this.esSentenciaControl(item)) { //Si es sentencia de control ir a estado 3
                             if (item.Tipo === 9 /* if */) {
-                                _this.traduccionPyton.push(item.Valor);
-                                if (esDoWhile) {
-                                    estado = 59;
-                                }
-                                else {
-                                    estado = 3;
-                                }
+                                sentenciaTraducia = "if ";
+                                estado = 3;
                             }
                             else {
-                                _this.traduccionPyton.push("def switch");
+                                sentenciaTraducia = "def switch";
                                 estado = 36;
+                                esSwitch = true;
                             }
                         }
                         else if (_this.esMetodo(item)) { //Cambiar la palabra void por def e ir al estado 4
-                            _this.traduccionPyton.push("def");
+                            sentenciaTraducia = "def ";
                             estado = 4;
                         }
                         else if (_this.esTipoDato(item)) { //Ir al estado 5 si es un tipo de dato
                             estado = 5;
                             tipoActual = item.Valor;
                         }
-                        else if (item.Tipo === 35 /* LLAVE_CIERRA */) {
+                        else if (item.Tipo === 36 /* LLAVE_CIERRA */) {
                             if (esRepeticion) {
                                 esRepeticion = false;
                             }
@@ -79,9 +85,11 @@ var parser = /** @class */ (function () {
                                 _this.traduccionPyton.push(" main()");
                                 esMain = false;
                             }
+                            else if (esSwitch) {
+                                esSwitch = false;
+                            }
                         }
                         else if (item.Tipo === 10 /* else */) {
-                            _this.traduccionPyton.push("elif ");
                             estado = 54;
                         }
                         else if (item.Tipo === 19 /* return */) {
@@ -105,13 +113,32 @@ var parser = /** @class */ (function () {
                                 _this.addError(item, error);
                             }
                         }
+                        else if (item.Tipo === 14 /* case */) {
+                            if (esSwitch) {
+                                estado = 68;
+                            }
+                            else {
+                                var error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
+                                _this.addError(item, error);
+                            }
+                        }
+                        else if (item.Tipo === 21 /* default */) {
+                            if (esSwitch) {
+                                estado = 70;
+                                sentenciaTraducia = "default:";
+                            }
+                            else {
+                                var error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
+                                _this.addError(item, error);
+                            }
+                        }
                         else {
                             var error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
                             _this.addError(item, error);
                         }
                         break;
                     case 1: //Manejar el imprimir consola
-                        if (item.Tipo === 42 /* PUNTO */) { //Debemos encontrar un punto para poder avanzar al estado 6
+                        if (item.Tipo === 43 /* PUNTO */) { //Debemos encontrar un punto para poder avanzar al estado 6
                             estado = 6;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -123,7 +150,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 2: //Manejar la sentencia de repeticion (for)
-                        if (item.Tipo === 31 /* PARENTESIS_ABRE */) {
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) {
                             estado = 9;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -135,7 +162,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 3: //Para manejar las sentencias de control (if)
-                        if (item.Tipo === 31 /* PARENTESIS_ABRE */) {
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) {
                             estado = 10;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -147,12 +174,12 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 4: //Manejar las funciones void/def
-                        if (item.Tipo === 45 /* identificador */ || item.Tipo === 8 /* main */) { //Si es identificador | main evaluar como metodo o no
+                        if (item.Tipo === 46 /* identificador */ || item.Tipo === 8 /* main */) { //Si es identificador | main evaluar como metodo o no
                             if (item.Tipo === 8 /* main */) {
                                 esMain = true;
                             }
                             estado = 11;
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -163,7 +190,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 5: //Manejar cuando viene un tipo de dato
-                        if (item.Tipo === 45 /* identificador */) {
+                        if (item.Tipo === 46 /* identificador */) {
                             estado = 12;
                             idActual.push(item.Valor);
                         }
@@ -178,7 +205,7 @@ var parser = /** @class */ (function () {
                     case 6: //Imprimir consola llevamos Console.
                         if (item.Tipo === 12 /* WRITE */) {
                             estado = 13;
-                            _this.traduccionPyton.push("print");
+                            sentenciaTraducia += "print";
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -189,7 +216,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 7: //Manejar while
-                        if (item.Tipo === 31 /* PARENTESIS_ABRE */) {
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) {
                             estado = 14;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -201,9 +228,12 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 8: //Manejar do-while
-                        if (item.Tipo === 34 /* LLAVE_ABRE */) {
-                            _this.traduccionPyton.push(":");
-                            estado = 15;
+                        if (item.Tipo === 35 /* LLAVE_ABRE */) {
+                            sentenciaTraducia += ":";
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
+                            esDoWhile = true;
+                            estado = 0;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -217,9 +247,9 @@ var parser = /** @class */ (function () {
                         if (item.Tipo === 2 /* int */) {
                             estado = 16;
                         }
-                        else if (item.Tipo === 45 /* identificador */) {
+                        else if (item.Tipo === 46 /* identificador */) {
                             estado = 17;
-                            _this.traduccionPyton.push("for " + item.Valor + " in range(");
+                            sentenciaTraducia += " " + item.Valor + " in range(";
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -230,9 +260,9 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 10: //Manejar parametros de if
-                        if (item.Tipo === 45 /* identificador */ || item.Tipo === 46 /* numero */ || item.Tipo === 47 /* cadena */) {
+                        if (item.Tipo === 46 /* identificador */ || item.Tipo === 47 /* numero */ || item.Tipo === 48 /* cadena */) {
                             estado = 18;
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -243,8 +273,8 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 11: //Manejar la funcion por medio de void
-                        if (item.Tipo === 31 /* PARENTESIS_ABRE */) { //Encontramos una funcion
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) { //Encontramos una funcion
+                            sentenciaTraducia += item.Valor;
                             estado = 19;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -256,20 +286,21 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 12: //Encontramos un tipo de dato y necesitamos saber si es variable o funcion
-                        if (item.Tipo === 31 /* PARENTESIS_ABRE */) { //Encontramos una funcion
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) { //Encontramos una funcion
                             estado = 20;
-                            _this.traduccionPyton.push("def " + idActual[0] + "(");
+                            sentenciaTraducia += "def " + idActual[0] + "(";
                             idActual.pop();
                         }
-                        else if (item.Tipo === 23 /* COMA */) { //Se encontra una lista de identificadores                        
+                        else if (item.Tipo === 24 /* COMA */) { //Se encontra una lista de identificadores
                             estado = 21;
                         }
-                        else if (item.Tipo === 21 /* IGUAL */) { //Se encontro una asignacion
+                        else if (item.Tipo === 22 /* IGUAL */) { //Se encontro una asignacion
                             estado = 22;
                         }
-                        else if (item.Tipo === 22 /* PUNTO_COMA */) { //Se encontro una variable sin dato
+                        else if (item.Tipo === 23 /* PUNTO_COMA */) { //Se encontro una variable sin dato                        
                             _this.traduccionPyton.push("var " + idActual[0]);
                             _this.listaVariables.push(new variableItem_1.variableItem(idActual[0], "undefined", tipoActual));
+                            sentenciaTraducia = "";
                             idActual.pop();
                             estado = 0;
                         }
@@ -282,8 +313,9 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 13: //Continuar Console.Write()
-                        if (item.Tipo === 31 /* PARENTESIS_ABRE */) { //Encontramos una funcion
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) { //Encontramos una funcion
                             estado = 23;
+                            sentenciaTraducia += "(";
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -294,9 +326,9 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 14: //Ya estamos dentro de los parametros del while
-                        if (item.Tipo === 45 /* identificador */ || item.Tipo === 46 /* numero */) {
+                        if (item.Tipo === 46 /* identificador */ || item.Tipo === 47 /* numero */) {
                             estado = 24;
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -307,13 +339,22 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 15: //Estamos dentro del do-while
-                        esDoWhile = true;
-                        estado = 0;
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) {
+                            estado = 59;
+                            sentenciaTraducia = "if (";
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un ( para manejar el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
                         break;
                     case 16: //Estamos en el for encontramos un int
-                        if (item.Tipo === 45 /* identificador */) {
+                        if (item.Tipo === 46 /* identificador */) {
                             estado = 17;
-                            _this.traduccionPyton.push("for " + item.Valor + " in range(");
+                            sentenciaTraducia += " " + item.Valor + " in range(";
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -324,7 +365,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 17: //Estamos en el for al encontrar un identificador
-                        if (item.Tipo === 21 /* IGUAL */) {
+                        if (item.Tipo === 22 /* IGUAL */) {
                             estado = 25;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -337,7 +378,7 @@ var parser = /** @class */ (function () {
                         break;
                     case 18: //Estamos en esta parte del if(18
                         if (_this.esRelacional(item)) {
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                             estado = 26;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -350,8 +391,8 @@ var parser = /** @class */ (function () {
                         break;
                     case 19: //void asf(
                         if (esMain) {
-                            if (item.Tipo === 32 /* PARENTESIS_CIERRA */) {
-                                _this.traduccionPyton.push(item.Valor);
+                            if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                                sentenciaTraducia += item.Valor;
                                 estado = 27;
                             }
                             else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -363,8 +404,8 @@ var parser = /** @class */ (function () {
                             }
                         }
                         else {
-                            if (item.Tipo === 32 /* PARENTESIS_CIERRA */) {
-                                _this.traduccionPyton.push(item.Valor);
+                            if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                                sentenciaTraducia += item.Valor;
                                 estado = 27;
                             }
                             else if (_this.esTipoDato(item)) {
@@ -380,8 +421,8 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 20: //Esto es una funcion
-                        if (item.Tipo === 32 /* PARENTESIS_CIERRA */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                            sentenciaTraducia += item.Valor;
                             estado = 38;
                         }
                         else if (_this.esTipoDato(item)) {
@@ -396,7 +437,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 21: //Si encontramos una lista de identificadores
-                        if (item.Tipo === 45 /* identificador */) { //Si es identificador ir al siguiente estado
+                        if (item.Tipo === 46 /* identificador */) { //Si es identificador ir al siguiente estado
                             estado = 30;
                             idActual.push(item.Valor);
                         }
@@ -409,7 +450,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 22: //Asignacion de las variable
-                        if (item.Tipo === 47 /* cadena */ || item.Tipo === 46 /* numero */ || item.Tipo === 45 /* identificador */) {
+                        if (item.Tipo === 48 /* cadena */ || item.Tipo === 47 /* numero */ || item.Tipo === 46 /* identificador */) {
                             var variables_1 = "var ";
                             var conteo_1 = 1;
                             idActual.forEach(function (idItem) {
@@ -422,8 +463,10 @@ var parser = /** @class */ (function () {
                                 _this.listaVariables.push(new variableItem_1.variableItem(idItem, item.Valor, tipoActual));
                                 conteo_1++;
                             });
+                            idActual.length = 0;
                             variables_1 += " = " + item.Valor;
                             _this.traduccionPyton.push(variables_1);
+                            sentenciaTraducia = "";
                             estado = 31;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -435,9 +478,9 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 23: //Parametro del console.write()
-                        if (item.Tipo === 47 /* cadena */ || item.Tipo === 45 /* identificador */ || item.Tipo === 46 /* numero */) {
-                            _this.traduccionPyton.push(item.Valor);
-                            estado = 32;
+                        if (item.Tipo === 48 /* cadena */ || item.Tipo === 46 /* identificador */ || item.Tipo === 47 /* numero */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 53;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -449,7 +492,7 @@ var parser = /** @class */ (function () {
                         break;
                     case 24: //Validar funcione en el while
                         if (_this.esRelacional(item)) {
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                             estado = 33;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -461,9 +504,9 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 25: //Encontrar el numero de la variable en el for
-                        if (item.Tipo === 46 /* numero */) {
+                        if (item.Tipo === 47 /* numero */) {
                             estado = 34;
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -474,9 +517,9 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 26: //Validar if
-                        if (item.Tipo === 45 /* identificador */ || item.Tipo === 46 /* numero */ || item.Tipo === 47 /* cadena */) {
+                        if (item.Tipo === 46 /* identificador */ || item.Tipo === 47 /* numero */ || item.Tipo === 48 /* cadena */) {
                             estado = 35;
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -487,8 +530,10 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 27: //Terminar con la funcion def
-                        if (item.Tipo === 34 /* LLAVE_ABRE */) {
-                            _this.traduccionPyton.push(":");
+                        if (item.Tipo === 35 /* LLAVE_ABRE */) {
+                            sentenciaTraducia += ":";
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
                             estado = 0;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -500,8 +545,8 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 28: //Debemos encontrar una variable en el void
-                        if (item.Tipo === 45 /* identificador */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 46 /* identificador */) {
+                            sentenciaTraducia += item.Valor;
                             estado = 37;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -513,8 +558,8 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 29: //Debemos encontrar el identificador
-                        if (item.Tipo === 45 /* identificador */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 46 /* identificador */) {
+                            sentenciaTraducia += item.Valor;
                             estado = 39;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -526,15 +571,15 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 30: //Se debe encontrar una coma y regresar al estado de identificador
-                        if (item.Tipo === 23 /* COMA */) {
+                        if (item.Tipo === 24 /* COMA */) {
                             estado = 21;
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                         }
-                        else if (item.Tipo === 21 /* IGUAL */) {
+                        else if (item.Tipo === 22 /* IGUAL */) {
                             estado = 22;
-                            _this.traduccionPyton.push(item.Valor);
+                            sentenciaTraducia += item.Valor;
                         }
-                        else if (item.Tipo === 22 /* PUNTO_COMA */) {
+                        else if (item.Tipo === 23 /* PUNTO_COMA */) {
                             estado = 0;
                             var variables_2 = "var ";
                             var conteo_2 = 1;
@@ -545,10 +590,12 @@ var parser = /** @class */ (function () {
                                 else {
                                     variables_2 += idItem;
                                 }
-                                _this.listaVariables.push(new variableItem_1.variableItem(idItem, item.Valor, tipoActual));
+                                _this.listaVariables.push(new variableItem_1.variableItem(idItem, "undefined", tipoActual));
                                 conteo_2++;
                             });
+                            idActual.length = 0;
                             _this.traduccionPyton.push(variables_2);
+                            sentenciaTraducia = "";
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -559,8 +606,9 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 31: //Necesitamos un punto y coma para terminar las variables
-                        if (item.Tipo === 22 /* PUNTO_COMA */) {
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
                             estado = 0;
+                            sentenciaTraducia = "";
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -571,11 +619,11 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 32: //Varias cadenas concatenadas o parentesis final
-                        if (item.Tipo === 24 /* SUMA */) {
+                        if (item.Tipo === 25 /* SUMA */) {
                             _this.traduccionPyton.push(",");
                             estado = 23;
                         }
-                        else if (item.Tipo === 32 /* PARENTESIS_CIERRA */) {
+                        else if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
                             _this.traduccionPyton.push(item.Valor);
                             estado = 40;
                         }
@@ -588,8 +636,8 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 33: //Encontrar un identificador
-                        if (item.Tipo === 45 /* identificador */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 46 /* identificador */) {
+                            sentenciaTraducia += item.Valor;
                             estado = 41;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -601,7 +649,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 34: //Terminar la primer sentencia del for (int i=0;)
-                        if (item.Tipo === 22 /* PUNTO_COMA */) {
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
                             estado = 42;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -613,10 +661,11 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 35: //Validar if con más contenido
-                        if (item.Tipo === 29 /* OR */ || item.Tipo === 28 /* AND */) {
+                        if (item.Tipo === 30 /* OR */ || item.Tipo === 29 /* AND */) {
                             estado = 10;
+                            sentenciaTraducia += " " + item.Valor + " ";
                         }
-                        else if (item.Tipo === 32 /* PARENTESIS_CIERRA */) {
+                        else if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
                             estado = 38;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -627,16 +676,27 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
-                    case 36: //Para controlar el def switch
+                    case 36: //Para controlar el def switch, solo hemos encontrado la palabra switch
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 64;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un ( para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
                         break;
                     case 37: //Para la declaracion de parametros de funcion void
-                        if (item.Tipo === 23 /* COMA */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 24 /* COMA */) {
+                            sentenciaTraducia += item.Valor;
                             estado = 43;
                         }
-                        else if (item.Tipo === 32 /* PARENTESIS_CIERRA */) {
-                            _this.traduccionPyton.push(item.Valor);
-                            estado = 38;
+                        else if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 27;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -647,8 +707,10 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 38: //Terminar la declaracion de un void
-                        if (item.Tipo === 34 /* LLAVE_ABRE */) {
-                            _this.traduccionPyton.push(":");
+                        if (item.Tipo === 35 /* LLAVE_ABRE */) {
+                            sentenciaTraducia += ":";
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
                             estado = 0;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -660,8 +722,12 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 39: //Manejar los parametros de funcion por tipo de dato
-                        if (item.Tipo === 23 /* COMA */) {
+                        if (item.Tipo === 24 /* COMA */) {
                             estado = 44;
+                        }
+                        else if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 38;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -672,7 +738,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 40: //Terminar la sentencia de console.write
-                        if (item.Tipo === 22 /* PUNTO_COMA */) {
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
                             estado = 0;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -684,8 +750,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 41: //Terminar el ciclo while con )
-                        if (32 /* PARENTESIS_CIERRA */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (33 /* PARENTESIS_CIERRA */) {
                             estado = 45;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -697,8 +762,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 42: //Encontrar un identificador del for(int i=0; i <- ese dato)
-                        if (item.Tipo === 45 /* identificador */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 46 /* identificador */) {
                             estado = 46;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -709,7 +773,7 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
-                    case 43: //Controlar los parametros 
+                    case 43: //Controlar los parametros
                         if (_this.esTipoDato(item)) {
                             estado = 28;
                         }
@@ -734,8 +798,10 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 45: //Encontrar llave de apertura para terminar de traducir el ciclo while
-                        if (item.Tipo === 34 /* LLAVE_ABRE */) {
-                            _this.traduccionPyton.push(":");
+                        if (item.Tipo === 35 /* LLAVE_ABRE */) {
+                            sentenciaTraducia += ":";
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
                             estado = 0;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -747,7 +813,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 46: //Encontrar variable del for segundo parametro
-                        if (item.Tipo === 45 /* identificador */) {
+                        if (item.Tipo === 37 /* MAYOR */ || item.Tipo === 38 /* MENOR */ || item.Tipo === 39 /* MAYOR_IGUAL */ || item.Tipo === 40 /* MENOR_IGUAL */) {
                             estado = 47;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -759,7 +825,8 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 47: //Encontrar condicion del for
-                        if (item.Tipo === 36 /* MAYOR */ || item.Tipo === 37 /* MENOR */ || item.Tipo === 38 /* MAYOR_IGUAL */ || item.Tipo === 39 /* MENOR_IGUAL */) {
+                        if (item.Tipo === 46 /* identificador */ || item.Tipo === 47 /* numero */) {
+                            sentenciaTraducia += "," + item.Valor + ")";
                             estado = 48;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -771,22 +838,9 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 48: //Encontrar limite del for
-                        if (item.Tipo === 45 /* identificador */ || item.Tipo === 46 /* numero */) {
-                            _this.traduccionPyton.push("," + item.Valor + ")");
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            sentenciaTraducia += ":";
                             estado = 49;
-                        }
-                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
-                            _this.addComentario(item);
-                        }
-                        else {
-                            var error = "Se esperaba un (tipo de dato) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
-                            _this.addError(item, error);
-                        }
-                        break;
-                    case 49: //Econtrar punto y coma para el tipo for
-                        if (item.Tipo === 22 /* PUNTO_COMA */) {
-                            _this.traduccionPyton.push(":");
-                            estado = 50;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -796,9 +850,9 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
-                    case 50: //Encontrar identificador del ultimo parametro for
-                        if (item.Tipo === 45 /* identificador */) {
-                            estado = 51;
+                    case 49: //Econtrar punto y coma para el tipo for
+                        if (item.Tipo === 46 /* identificador */) {
+                            estado = 50;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -808,9 +862,9 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
-                    case 51:
-                        if (item.Tipo == 44 /* DECREMENTO */ || item.Tipo === 43 /* INCREMENTO */) {
-                            estado = 52;
+                    case 50: //Encontrar identificador del ultimo parametro for
+                        if (item.Tipo == 45 /* DECREMENTO */ || item.Tipo === 44 /* INCREMENTO */) {
+                            estado = 51;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -820,9 +874,9 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
-                    case 52:
-                        if (item.Tipo === 32 /* PARENTESIS_CIERRA */) {
-                            estado = 53;
+                    case 51:
+                        if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                            estado = 52;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -832,9 +886,11 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
-                    case 53:
-                        if (item.Tipo === 34 /* LLAVE_ABRE */) {
+                    case 52:
+                        if (item.Tipo === 35 /* LLAVE_ABRE */) {
                             estado = 0;
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -844,9 +900,31 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
+                    case 53:
+                        if (item.Tipo === 25 /* SUMA */) {
+                            sentenciaTraducia += ",";
+                            estado = 23;
+                        }
+                        else if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 65;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un if para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
                     case 54:
                         if (item.Tipo === 9 /* if */) {
+                            sentenciaTraducia = "elif ";
                             estado = 55;
+                        }
+                        else if (item.Tipo === 35 /* LLAVE_ABRE */) {
+                            _this.traduccionPyton.push("else{");
+                            estado = 0;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
                             _this.addComentario(item);
@@ -857,7 +935,7 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 55:
-                        if (item.Tipo === 31 /* PARENTESIS_ABRE */) {
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) {
                             estado = 10;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -869,12 +947,12 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 56:
-                        if (item.Tipo === 22 /* PUNTO_COMA */) {
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
                             _this.traduccionPyton.push("return");
                             estado = 0;
                         }
-                        else if (item.Tipo === 46 /* numero */ || item.Tipo === 45 /* identificador */ || item.Tipo === 47 /* cadena */) {
-                            _this.traduccionPyton.push("return " + item.Valor);
+                        else if (item.Tipo === 47 /* numero */ || item.Tipo === 46 /* identificador */ || item.Tipo === 48 /* cadena */) {
+                            sentenciaTraducia += "return " + item.Valor;
                             estado = 57;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -886,11 +964,13 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 57:
-                        if (item.Tipo === 24 /* SUMA */ || item.Tipo === 25 /* RESTA */ || item.Tipo === 27 /* DIVISION */ || item.Tipo === 26 /* MULTIPLICACION */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 25 /* SUMA */ || item.Tipo === 26 /* RESTA */ || item.Tipo === 28 /* DIVISION */ || item.Tipo === 27 /* MULTIPLICACION */) {
+                            sentenciaTraducia += item.Valor;
                             estado = 58;
                         }
-                        else if (item.Tipo === 22 /* PUNTO_COMA */) {
+                        else if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
                             estado = 0;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -902,8 +982,8 @@ var parser = /** @class */ (function () {
                         }
                         break;
                     case 58:
-                        if (item.Tipo === 46 /* numero */ || item.Tipo === 45 /* identificador */ || item.Tipo === 47 /* cadena */) {
-                            _this.traduccionPyton.push(item.Valor);
+                        if (item.Tipo === 47 /* numero */ || item.Tipo === 46 /* identificador */ || item.Tipo === 48 /* cadena */) {
+                            sentenciaTraducia += item.Valor;
                             estado = 57;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -914,9 +994,284 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
+                    case 59:
+                        if (item.Tipo === 46 /* identificador */ || item.Tipo === 47 /* numero */) {
+                            estado = 60;
+                            sentenciaTraducia += item.Valor;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un (identificador|numero) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 60:
+                        if (_this.esRelacional(item)) {
+                            estado = 61;
+                            sentenciaTraducia += item.Valor;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un (<|>|>=|<=|!=|==) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 61:
+                        if (item.Tipo === 46 /* identificador */ || item.Tipo === 47 /* numero */) {
+                            estado = 62;
+                            sentenciaTraducia += item.Valor;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un (identificador|numero) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 62:
+                        if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                            estado = 63;
+                            sentenciaTraducia += item.Valor;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un ) para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 63:
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            estado = 0;
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            _this.traduccionPyton.push("break");
+                            sentenciaTraducia = "";
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un ; para manejar los parametros pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 64:
+                        if (item.Tipo === 46 /* identificador */ || item.Tipo === 47 /* numero */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 74;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un ()|OR|AND) para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 65:
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
+                            estado = 0;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un ; para manejar para el console.write pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 66:
+                        if (item.Tipo === 35 /* LLAVE_ABRE */) {
+                            estado = 67;
+                            sentenciaTraducia += ":";
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            _this.traduccionPyton.push("switcher = {");
+                            sentenciaTraducia = "";
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un { para manejar para el switch pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 67:
+                        if (item.Tipo === 14 /* case */) {
+                            estado = 68;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un case para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 68:
+                        if (item.Tipo === 47 /* numero */) {
+                            estado = 69;
+                            switchActual = item.Valor;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 69:
+                        if (item.Tipo === 34 /* DOS_PUNTOS */) {
+                            estado = 70;
+                            sentenciaTraducia = switchActual + ": ";
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 70:
+                        if (item.Tipo === 46 /* identificador */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 71;
+                        }
+                        else if (11 /* CONSOLE */) {
+                            estado = 1; //Eajsflkasjfasfasfasfas----------------------------------------------------------------------
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 71:
+                        if (item.Tipo === 22 /* IGUAL */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 72;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 72:
+                        if (item.Tipo === 47 /* numero */ || item.Tipo === 48 /* cadena */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 73;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 73:
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            sentenciaTraducia += ",";
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            estado = 0;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 74:
+                        if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 66;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
                 }
             }
         });
+    };
+    parser.prototype.mostrarErroresLexicosSintacticos = function () {
+        var tabla = document.getElementById('tablaErrores');
+        if (tabla) {
+            var conteo_3 = 1;
+            this.auxListaTokens.forEach(function (element) {
+                var newRow = tabla.insertRow(tabla.rows.length);
+                var no = newRow.insertCell(0);
+                var tipo = newRow.insertCell(1);
+                var linea = newRow.insertCell(2);
+                var columna = newRow.insertCell(3);
+                var descripcion = newRow.insertCell(4);
+                no.innerHTML = conteo_3 + "";
+                tipo.innerHTML = "Lexico";
+                linea.innerHTML = element.Linea + "";
+                columna.innerHTML = element.Colummna + "";
+                descripcion.innerHTML = element.getTipoExtend();
+                conteo_3++;
+            });
+            this.listaErrores.forEach(function (error) {
+                var newRow = tabla.insertRow(tabla.rows.length);
+                var no = newRow.insertCell(0);
+                var tipo = newRow.insertCell(1);
+                var linea = newRow.insertCell(2);
+                var columna = newRow.insertCell(3);
+                var descripcion = newRow.insertCell(4);
+                no.innerHTML = conteo_3 + "";
+                tipo.innerHTML = "Sintactico";
+                linea.innerHTML = error.Linea + "";
+                columna.innerHTML = error.Columna + "";
+                descripcion.innerHTML = error.Error;
+                conteo_3++;
+            });
+        }
+    };
+    parser.prototype.pintarVariables = function () {
+        var tabla = document.getElementById('tablaVariables');
+        this.listaVariables.forEach(function (varItem) {
+            var newRow = tabla.insertRow(tabla.rows.length);
+            var nombre = newRow.insertCell(0);
+            var tipo = newRow.insertCell(1);
+            var linea = newRow.insertCell(2);
+            nombre.innerHTML = varItem.ID;
+            tipo.innerHTML = varItem.Tipo;
+            linea.innerHTML = varItem.Valor;
+        });
+    };
+    parser.prototype.mostrarTraduccion = function () {
+        console.log("-----------------------------");
+        var traduccion = "";
+        this.traduccionPyton.forEach(function (element) {
+            traduccion += element + "\n";
+            console.log(element);
+        });
+        var elementoEntrada = document.getElementById('txtSalidaP');
+        if (elementoEntrada) {
+            elementoEntrada.innerHTML = traduccion;
+        }
     };
     parser.prototype.addError = function (tokenActual, tipoError) {
         this.listaErrores.push(new errorSintactico_1.errorSintactico(tokenActual.Valor, tokenActual.Linea, tokenActual.Colummna, tipoError));
@@ -928,12 +1283,12 @@ var parser = /** @class */ (function () {
         }
         else {
             cadena = tokenActual.Valor.replace("/*", "'''");
-            cadena = tokenActual.Valor.replace("*/", "'''");
+            cadena = cadena.replace("*/", "'''");
         }
         this.traduccionPyton.push(cadena);
     };
     parser.prototype.esRelacional = function (tokenActual) {
-        if (tokenActual.Tipo === 36 /* MAYOR */ || tokenActual.Tipo === 37 /* MENOR */ || tokenActual.Tipo === 38 /* MAYOR_IGUAL */ || tokenActual.Tipo === 39 /* MENOR_IGUAL */ || tokenActual.Tipo === 41 /* DISTINTO */ || tokenActual.Tipo === 40 /* IGUAL_IGUAL */) {
+        if (tokenActual.Tipo === 37 /* MAYOR */ || tokenActual.Tipo === 38 /* MENOR */ || tokenActual.Tipo === 39 /* MAYOR_IGUAL */ || tokenActual.Tipo === 40 /* MENOR_IGUAL */ || tokenActual.Tipo === 42 /* DISTINTO */ || tokenActual.Tipo === 41 /* IGUAL_IGUAL */) {
             return true;
         }
         return false;
@@ -979,6 +1334,9 @@ var parser = /** @class */ (function () {
 function iniciarParser() {
     var parserFun = new parser();
     parserFun.startParse();
+    parserFun.mostrarTraduccion();
+    parserFun.mostrarErroresLexicosSintacticos();
+    parserFun.pintarVariables();
 }
 exports.iniciarParser = iniciarParser;
 var elementButon = document.getElementById('btnTraducir');

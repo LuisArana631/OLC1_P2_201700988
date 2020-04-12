@@ -71,6 +71,8 @@ export class token{
                 return "return - Palabra reservada";
             case tipo.continue:
                 return "continue - Palabra reservada";
+            case tipo.default:
+                return "default - Palabrea reservada";
             case tipo.IGUAL:
                 return "Igual";
             case tipo.PUNTO_COMA:
@@ -157,6 +159,7 @@ export const enum tipo{
     do,
     return,
     continue,
+    default,
     /* Token de signos */
     IGUAL,  //=
     PUNTO_COMA, //;

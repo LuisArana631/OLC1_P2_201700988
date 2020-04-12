@@ -46,10 +46,10 @@ var scanner = /** @class */ (function () {
                         this.estado = 3;
                     }
                     else if (asciiChar === 59) { //Char ;
-                        this.addToken(22 /* PUNTO_COMA */, caracter, linea, columna);
+                        this.addToken(23 /* PUNTO_COMA */, caracter, linea, columna);
                     }
                     else if (asciiChar === 44) { //Char ,
-                        this.addToken(23 /* COMA */, caracter, linea, columna);
+                        this.addToken(24 /* COMA */, caracter, linea, columna);
                     }
                     else if (asciiChar === 43) { //Char +
                         this.estado = 16;
@@ -58,7 +58,7 @@ var scanner = /** @class */ (function () {
                         this.estado = 17;
                     }
                     else if (asciiChar === 42) { //Char *
-                        this.addToken(26 /* MULTIPLICACION */, caracter, linea, columna);
+                        this.addToken(27 /* MULTIPLICACION */, caracter, linea, columna);
                     }
                     else if (asciiChar === 38) { // Char &
                         this.estado = 4;
@@ -70,19 +70,19 @@ var scanner = /** @class */ (function () {
                         this.estado = 6;
                     }
                     else if (asciiChar === 40) { //Char (
-                        this.addToken(31 /* PARENTESIS_ABRE */, caracter, linea, columna);
+                        this.addToken(32 /* PARENTESIS_ABRE */, caracter, linea, columna);
                     }
                     else if (asciiChar === 41) { //Char )
-                        this.addToken(32 /* PARENTESIS_CIERRA */, caracter, linea, columna);
+                        this.addToken(33 /* PARENTESIS_CIERRA */, caracter, linea, columna);
                     }
                     else if (asciiChar === 58) { //Char :
-                        this.addToken(33 /* DOS_PUNTOS */, caracter, linea, columna);
+                        this.addToken(34 /* DOS_PUNTOS */, caracter, linea, columna);
                     }
                     else if (asciiChar === 123) { //Char {
-                        this.addToken(34 /* LLAVE_ABRE */, caracter, linea, columna);
+                        this.addToken(35 /* LLAVE_ABRE */, caracter, linea, columna);
                     }
                     else if (asciiChar === 125) { //Char }
-                        this.addToken(35 /* LLAVE_CIERRA */, caracter, linea, columna);
+                        this.addToken(36 /* LLAVE_CIERRA */, caracter, linea, columna);
                     }
                     else if (asciiChar === 62) { //Char >
                         this.estado = 7;
@@ -91,7 +91,7 @@ var scanner = /** @class */ (function () {
                         this.estado = 8;
                     }
                     else if (asciiChar === 46) { //Char .
-                        this.addToken(42 /* PUNTO */, caracter, linea, columna);
+                        this.addToken(43 /* PUNTO */, caracter, linea, columna);
                     }
                     else if (this.esLetra(caracter)) {
                         this.estado = 9;
@@ -109,7 +109,7 @@ var scanner = /** @class */ (function () {
                         //Ignorar caracter final
                     }
                     else {
-                        this.addToken(48 /* ERROR_LEXICO */, caracter, linea, columna);
+                        this.addToken(49 /* ERROR_LEXICO */, caracter, linea, columna);
                     }
                     break;
                 case 1:
@@ -122,14 +122,14 @@ var scanner = /** @class */ (function () {
                         this.estado = 12;
                     }
                     else {
-                        this.addToken(27 /* DIVISION */, this.auxLexico, linea, columna);
+                        this.addToken(28 /* DIVISION */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 2:
                     if (asciiChar === 34) { //Char "
                         this.auxLexico += caracter;
-                        this.addToken(47 /* cadena */, this.auxLexico, linea, columna);
+                        this.addToken(48 /* cadena */, this.auxLexico, linea, columna);
                     }
                     else {
                         this.auxLexico += caracter;
@@ -138,60 +138,68 @@ var scanner = /** @class */ (function () {
                 case 3:
                     if (asciiChar === 61) { //Char =
                         this.auxLexico += caracter;
-                        this.addToken(40 /* IGUAL_IGUAL */, this.auxLexico, linea, columna);
+                        this.addToken(41 /* IGUAL_IGUAL */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(21 /* IGUAL */, this.auxLexico, linea, columna);
+                        this.addToken(22 /* IGUAL */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 4:
                     if (asciiChar === 38) { //Char &
                         this.auxLexico += caracter;
-                        this.addToken(28 /* AND */, this.auxLexico, linea, columna);
+                        this.addToken(29 /* AND */, this.auxLexico, linea, columna);
+                    }
+                    else if (asciiChar === 103) { //Char g
+                        this.auxLexico += caracter;
+                        this.estado = 18;
+                    }
+                    else if (asciiChar === 108) { //Char l
+                        this.auxLexico += caracter;
+                        this.estado = 19;
                     }
                     else {
-                        this.addToken(48 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        this.addToken(49 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 5:
                     if (asciiChar === 124) { //Char |
                         this.auxLexico += caracter;
-                        this.addToken(29 /* OR */, this.auxLexico, linea, columna);
+                        this.addToken(30 /* OR */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(48 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        this.addToken(49 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 6:
                     if (asciiChar === 61) { //Char =
                         this.auxLexico += caracter;
-                        this.addToken(41 /* DISTINTO */, this.auxLexico, linea, columna);
+                        this.addToken(42 /* DISTINTO */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(30 /* NOT */, this.auxLexico, linea, columna);
+                        this.addToken(31 /* NOT */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 7:
                     if (asciiChar === 61) { //Char =
                         this.auxLexico += caracter;
-                        this.addToken(38 /* MAYOR_IGUAL */, this.auxLexico, linea, columna);
+                        this.addToken(39 /* MAYOR_IGUAL */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(36 /* MAYOR */, this.auxLexico, linea, columna);
+                        this.addToken(37 /* MAYOR */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 8:
                     if (asciiChar === 61) { //Char =
                         this.auxLexico += caracter;
-                        this.addToken(39 /* MENOR_IGUAL */, this.auxLexico, linea, columna);
+                        this.addToken(40 /* MENOR_IGUAL */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(37 /* MENOR */, this.auxLexico, linea, columna);
+                        this.addToken(38 /* MENOR */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -275,6 +283,10 @@ var scanner = /** @class */ (function () {
                         this.addToken(20 /* continue */, this.auxLexico, linea, columna);
                         i--;
                     }
+                    else if (this.auxLexico === "default") {
+                        this.addToken(21 /* default */, this.auxLexico, linea, columna);
+                        i--;
+                    }
                     else if (this.esLetra(caracter)) {
                         this.auxLexico += caracter;
                     }
@@ -282,7 +294,7 @@ var scanner = /** @class */ (function () {
                         this.auxLexico += caracter;
                     }
                     else {
-                        this.addToken(45 /* identificador */, this.auxLexico, linea, columna);
+                        this.addToken(46 /* identificador */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -295,7 +307,7 @@ var scanner = /** @class */ (function () {
                         this.estado = 13;
                     }
                     else {
-                        this.addToken(46 /* numero */, this.auxLexico, linea, columna);
+                        this.addToken(47 /* numero */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -319,12 +331,13 @@ var scanner = /** @class */ (function () {
                         this.estado = 15;
                     }
                     else {
-                        this.addToken(48 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        this.addToken(49 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 14:
                     if (asciiChar === 47) { //Char /
+                        this.auxLexico += caracter;
                         this.addToken(1 /* Comentario_Multilinea */, this.auxLexico, linea, columna);
                     }
                     else {
@@ -337,27 +350,67 @@ var scanner = /** @class */ (function () {
                         this.auxLexico += caracter;
                     }
                     else {
-                        this.addToken(46 /* numero */, this.auxLexico, linea, columna);
+                        this.addToken(47 /* numero */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 16:
                     if (asciiChar === 43) { //Char +
                         this.auxLexico += caracter;
-                        this.addToken(43 /* INCREMENTO */, this.auxLexico, linea, columna);
+                        this.addToken(44 /* INCREMENTO */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(24 /* SUMA */, this.auxLexico, linea, columna);
+                        this.addToken(25 /* SUMA */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
                 case 17:
                     if (asciiChar === 45) { //Char -
                         this.auxLexico += caracter;
-                        this.addToken(44 /* DECREMENTO */, this.auxLexico, linea, columna);
+                        this.addToken(45 /* DECREMENTO */, this.auxLexico, linea, columna);
                     }
                     else {
-                        this.addToken(25 /* RESTA */, this.auxLexico, linea, columna);
+                        this.addToken(26 /* RESTA */, this.auxLexico, linea, columna);
+                        i--;
+                    }
+                    break;
+                case 18:
+                    if (asciiChar === 116) { //Char t
+                        this.auxLexico += caracter;
+                        this.estado = 20;
+                    }
+                    else {
+                        this.addToken(49 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        i--;
+                    }
+                    break;
+                case 19:
+                    if (asciiChar === 116) { //Char t
+                        this.auxLexico += caracter;
+                        this.estado = 21;
+                    }
+                    else {
+                        this.addToken(49 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        i--;
+                    }
+                    break;
+                case 20:
+                    if (asciiChar === 59) { //Char ;
+                        this.auxLexico += caracter;
+                        this.estado = 7;
+                    }
+                    else {
+                        this.addToken(49 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
+                        i--;
+                    }
+                    break;
+                case 21:
+                    if (asciiChar === 59) { //Char ;
+                        this.auxLexico += caracter;
+                        this.estado = 8;
+                    }
+                    else {
+                        this.addToken(49 /* ERROR_LEXICO */, this.auxLexico, linea, columna);
                         i--;
                     }
                     break;
@@ -367,7 +420,6 @@ var scanner = /** @class */ (function () {
         console.log("Se ha analizado el archivo");
     };
     scanner.prototype.mostrarAnalisisLexico = function () {
-        var textoSalida = "salida";
         console.log("mostrando analisis lexico");
         this.listaToken.forEach(function (item) {
             console.log(item.getTipoExtend() + " -> " + item.Valor + " -> " + item.Linea + "\n");

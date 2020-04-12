@@ -79,61 +79,63 @@ var token = /** @class */ (function () {
                 return "return - Palabra reservada";
             case 20 /* continue */:
                 return "continue - Palabra reservada";
-            case 21 /* IGUAL */:
+            case 21 /* default */:
+                return "default - Palabrea reservada";
+            case 22 /* IGUAL */:
                 return "Igual";
-            case 22 /* PUNTO_COMA */:
+            case 23 /* PUNTO_COMA */:
                 return "Punto y coma";
-            case 23 /* COMA */:
+            case 24 /* COMA */:
                 return "Coma";
-            case 24 /* SUMA */:
+            case 25 /* SUMA */:
                 return "Suma";
-            case 25 /* RESTA */:
+            case 26 /* RESTA */:
                 return "Resta";
-            case 26 /* MULTIPLICACION */:
+            case 27 /* MULTIPLICACION */:
                 return "Multiplicacion";
-            case 27 /* DIVISION */:
+            case 28 /* DIVISION */:
                 return "Division";
-            case 28 /* AND */:
+            case 29 /* AND */:
                 return "And";
-            case 29 /* OR */:
+            case 30 /* OR */:
                 return "Or";
-            case 30 /* NOT */:
+            case 31 /* NOT */:
                 return "Not";
-            case 31 /* PARENTESIS_ABRE */:
+            case 32 /* PARENTESIS_ABRE */:
                 return "Parentesis abre";
-            case 32 /* PARENTESIS_CIERRA */:
+            case 33 /* PARENTESIS_CIERRA */:
                 return "Parentesis cierra";
-            case 33 /* DOS_PUNTOS */:
+            case 34 /* DOS_PUNTOS */:
                 return "Dos puntos";
-            case 34 /* LLAVE_ABRE */:
+            case 35 /* LLAVE_ABRE */:
                 return "Llave abre";
-            case 35 /* LLAVE_CIERRA */:
+            case 36 /* LLAVE_CIERRA */:
                 return "Llave cierra";
-            case 36 /* MAYOR */:
+            case 37 /* MAYOR */:
                 return "Mayor";
-            case 37 /* MENOR */:
+            case 38 /* MENOR */:
                 return "Menor";
-            case 38 /* MAYOR_IGUAL */:
+            case 39 /* MAYOR_IGUAL */:
                 return "Mayor igual";
-            case 39 /* MENOR_IGUAL */:
+            case 40 /* MENOR_IGUAL */:
                 return "Menor igual";
-            case 40 /* IGUAL_IGUAL */:
+            case 41 /* IGUAL_IGUAL */:
                 return "Doble igual";
-            case 41 /* DISTINTO */:
+            case 42 /* DISTINTO */:
                 return "Distinto";
-            case 42 /* PUNTO */:
+            case 43 /* PUNTO */:
                 return "Punto";
-            case 43 /* INCREMENTO */:
+            case 44 /* INCREMENTO */:
                 return "Incremento";
-            case 44 /* DECREMENTO */:
+            case 45 /* DECREMENTO */:
                 return "Decremento";
-            case 45 /* identificador */:
+            case 46 /* identificador */:
                 return "Identificador";
-            case 46 /* numero */:
+            case 47 /* numero */:
                 return "Numero";
-            case 47 /* cadena */:
+            case 48 /* cadena */:
                 return "Cadena";
-            case 48 /* ERROR_LEXICO */:
+            case 49 /* ERROR_LEXICO */:
                 return "Error lexico";
         }
     };

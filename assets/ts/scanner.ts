@@ -5,17 +5,17 @@ import {token, tipo} from "./token";
     private auxLexico:string;
     private estado:number;
 
-    constructor(){      
-        this.listaToken = new Array;  
+    constructor(){
+        this.listaToken = new Array;
         this.auxLexico = "";
-        this.estado = 0;        
+        this.estado = 0;
     }
 
     get ListaToken():Array<token>{
         return this.listaToken;
     }
-    
-    public startScanner():void{        
+
+    public startScanner():void{
 
         let entrada;
         let elementoEntrada = document.getElementById('txtEntradaC');
@@ -25,11 +25,11 @@ import {token, tipo} from "./token";
 
         entrada += "#";
         let linea:number = 1;
-        let columna:number = 1;               
+        let columna:number = 1;
 
         let caracter:any;
         let asciiChar:number;
-        
+
         console.log("caracteres en cadena: " + entrada.length);
         for(let i=0; i<entrada.length; i++){
             caracter = entrada.charAt(i);
@@ -37,7 +37,7 @@ import {token, tipo} from "./token";
 
             //console.log(this.estado + " -> " + caracter + " -> ASCII(" + asciiChar + ")");
             switch(this.estado){
-                case 0:                    
+                case 0:
                 this.auxLexico += caracter;
                 if(this.esNumero(caracter)){
                    this.estado = 10;
@@ -52,9 +52,9 @@ import {token, tipo} from "./token";
                 }else if(asciiChar === 44){ //Char ,
                     this.addToken(tipo.COMA, caracter, linea, columna);
                 }else if(asciiChar === 43){ //Char +
-                    this.estado = 16;                                        
+                    this.estado = 16;
                 }else if(asciiChar === 45){  //Char -
-                    this.estado = 17;                    
+                    this.estado = 17;
                 }else if(asciiChar === 42){ //Char *
                     this.addToken(tipo.MULTIPLICACION, caracter, linea, columna);
                 }else if(asciiChar === 38){ // Char &
@@ -79,7 +79,7 @@ import {token, tipo} from "./token";
                     this.estado = 8;
                 }else if(asciiChar === 46){ //Char .
                     this.addToken(tipo.PUNTO, caracter, linea, columna);
-                }else if(this.esLetra(caracter)){                            
+                }else if(this.esLetra(caracter)){
                     this.estado = 9;
                 }else if(asciiChar === 10){ // Salto de linea
                     linea++;
@@ -127,6 +127,12 @@ import {token, tipo} from "./token";
                     if(asciiChar === 38){ //Char &
                         this.auxLexico +=caracter;
                         this.addToken(tipo.AND, this.auxLexico, linea, columna);
+                    }else if(asciiChar === 103){ //Char g
+                        this.auxLexico +=caracter;
+                        this.estado = 18;
+                    }else if(asciiChar === 108){ //Char l
+                        this.auxLexico +=caracter;
+                        this.estado =19;
                     }else{
                         this.addToken(tipo.ERROR_LEXICO, this.auxLexico, linea,columna);
                         i--;
@@ -153,7 +159,7 @@ import {token, tipo} from "./token";
                 case 7:
                     if(asciiChar === 61){ //Char =
                         this.auxLexico += caracter;
-                        this.addToken(tipo.MAYOR_IGUAL, this.auxLexico, linea,columna);                        
+                        this.addToken(tipo.MAYOR_IGUAL, this.auxLexico, linea,columna);
                     }else{
                         this.addToken(tipo.MAYOR, this.auxLexico, linea, columna);
                         i--;
@@ -172,55 +178,55 @@ import {token, tipo} from "./token";
                     if(this.esNumero(caracter)){
                         this.auxLexico += caracter;
                     }else if(this.auxLexico === "int"){
-                        this.addToken(tipo.int, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.int, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "double"){
-                        this.addToken(tipo.double, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.double, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico ===  "char"){
-                        this.addToken(tipo.char, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.char, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "bool"){
-                        this.addToken(tipo.bool, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.bool, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "string"){
-                        this.addToken(tipo.string, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.string, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "void"){
-                        this.addToken(tipo.void, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.void, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "main"){
-                        this.addToken(tipo.main, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.main, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "if"){
-                        this.addToken(tipo.if, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.if, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "else"){
-                        this.addToken(tipo.else, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.else, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "Console"){
-                        this.addToken(tipo.CONSOLE, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.CONSOLE, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "Write"){
-                        this.addToken(tipo.WRITE, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.WRITE, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "switch"){
-                        this.addToken(tipo.switch, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.switch, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "case"){
-                        this.addToken(tipo.case, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.case, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "break"){
-                        this.addToken(tipo.break, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.break, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "for"){
-                        this.addToken(tipo.for, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.for, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "while"){
-                        this.addToken(tipo.do, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.do, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "do"){
-                        this.addToken(tipo.do, this.auxLexico, linea, columna);                            
+                        this.addToken(tipo.do, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "return"){
                         this.addToken(tipo.return, this.auxLexico, linea, columna);
@@ -228,13 +234,16 @@ import {token, tipo} from "./token";
                     }else if(this.auxLexico === "continue"){
                         this.addToken(tipo.continue,  this.auxLexico, linea, columna);
                         i--;
+                    }else if(this.auxLexico === "default"){
+                        this.addToken(tipo.default,  this.auxLexico, linea, columna);
+                        i--;
                     }else  if(this.esLetra(caracter)){
-                        this.auxLexico += caracter;                            
+                        this.auxLexico += caracter;
                     }else if(asciiChar === 95){ //Char _
-                        this.auxLexico += caracter;                            
+                        this.auxLexico += caracter;
                     }else{
                         this.addToken(tipo.identificador, this.auxLexico, linea,columna);
-                        i--;                    
+                        i--;
                     }
                     break;
                 case 10:
@@ -264,7 +273,7 @@ import {token, tipo} from "./token";
                 case 13:
                     if(this.esNumero(caracter)){
                         this.auxLexico += caracter;
-                        this.estado = 15;                        
+                        this.estado = 15;
                     }else{
                         this.addToken(tipo.ERROR_LEXICO, this.auxLexico, linea, columna);
                         i--;
@@ -272,23 +281,24 @@ import {token, tipo} from "./token";
                     break;
                 case 14:
                     if(asciiChar === 47){ //Char /
+                        this.auxLexico += caracter;
                         this.addToken(tipo.Comentario_Multilinea, this.auxLexico, linea,columna);
                     }else{
                         this.auxLexico += caracter;
                         this.estado = 12;
-                    }        
+                    }
                     break;
                 case 15:
                     if(this.esNumero(caracter)){
-                        this.auxLexico += caracter;                        
+                        this.auxLexico += caracter;
                     }else{
                         this.addToken(tipo.numero, this.auxLexico, linea,columna);
-                        i--;                        
+                        i--;
                     }
                     break;
                 case 16:
                     if(asciiChar === 43){   //Char +
-                        this.auxLexico += caracter;                        
+                        this.auxLexico += caracter;
                         this.addToken(tipo.INCREMENTO, this.auxLexico, linea, columna);
                     }else{
                         this.addToken(tipo.SUMA, this.auxLexico, linea, columna);
@@ -297,10 +307,46 @@ import {token, tipo} from "./token";
                     break;
                 case 17:
                     if(asciiChar === 45){   //Char -
-                        this.auxLexico += caracter;                        
+                        this.auxLexico += caracter;
                         this.addToken(tipo.DECREMENTO, this.auxLexico, linea, columna);
                     }else{
                         this.addToken(tipo.RESTA, this.auxLexico, linea, columna);
+                        i--;
+                    }
+                    break;
+                case 18:
+                    if(asciiChar ===  116){ //Char t
+                        this.auxLexico +=caracter;
+                        this.estado = 20;
+                    }else{
+                        this.addToken(tipo.ERROR_LEXICO, this.auxLexico, linea,columna);
+                        i--;
+                    }
+                    break;
+                case 19:
+                    if(asciiChar ===  116){ //Char t
+                        this.auxLexico +=caracter;
+                        this.estado = 21;
+                    }else{
+                        this.addToken(tipo.ERROR_LEXICO, this.auxLexico, linea,columna);
+                        i--;
+                    }
+                    break;
+                case  20:
+                    if(asciiChar ===  59){ //Char ;
+                        this.auxLexico += caracter;
+                        this.estado = 7
+                    }else{
+                        this.addToken(tipo.ERROR_LEXICO, this.auxLexico, linea,columna);
+                        i--;
+                    }
+                    break;
+                case 21:
+                    if(asciiChar ===  59){ //Char ;
+                        this.auxLexico += caracter;
+                        this.estado = 8;
+                    }else{
+                        this.addToken(tipo.ERROR_LEXICO, this.auxLexico, linea,columna);
                         i--;
                     }
                     break;
@@ -309,14 +355,13 @@ import {token, tipo} from "./token";
             columna++;
         }
 
-        console.log("Se ha analizado el archivo");             
+        console.log("Se ha analizado el archivo");
 
     }
 
-    public mostrarAnalisisLexico():void{        
-      let textoSalida = "salida";
+    public mostrarAnalisisLexico():void{      
       console.log("mostrando analisis lexico");
-      this.listaToken.forEach(item => {          
+      this.listaToken.forEach(item => {
           console.log(item.getTipoExtend()+" -> "+item.Valor+" -> "+item.Linea+"\n");
       });
     }
@@ -340,7 +385,7 @@ import {token, tipo} from "./token";
         }
     }
 
-    private addToken(tokenType:tipo, dato:string, linea:number, columna:number):void{        
+    private addToken(tokenType:tipo, dato:string, linea:number, columna:number):void{
         this.listaToken.push(new token(tokenType,dato,linea,columna));
         this.limpiarVariables();
     }
@@ -360,6 +405,3 @@ export function iniciarScanner(){
 
     return scannerFun.ListaToken;
 }
-
-
-
