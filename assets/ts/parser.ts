@@ -2,18 +2,26 @@ import {token, tipo} from "./token";
 import {iniciarScanner} from "./scanner";
 import {errorSintactico} from "./errorSintactico";
 import { variableItem } from './variableItem';
+import {errorItem} from "./erroresList";
 
 class parser{
     private listaErrores:Array<errorSintactico>;
     private auxListaTokens:Array<token>;
     private traduccionPyton:Array<string>;
     private listaVariables:Array<variableItem>;
+    private ambosErrores:Array<errorItem>;
+
+    get AmbosErrores():Array<errorItem>{
+        return this.ambosErrores;
+    }
+    
 
     constructor(){
         this.listaErrores = new Array;
         this.auxListaTokens = iniciarScanner();
         this.traduccionPyton = new Array;
         this.listaVariables = new Array;
+        this.ambosErrores = new  Array;
     }
 
     public startParse():void{
@@ -22,6 +30,7 @@ class parser{
         let idActual:Array<string> = new Array;
         let esMain:boolean = false;
         let esRepeticion:boolean = false;
+        let esControl:boolean = false;
         let esDoWhile:boolean = false;
         let esSwitch:boolean = false;
         let switchActual:string = "";
@@ -57,6 +66,7 @@ class parser{
                         }
                         esRepeticion = true;
                     }else if(this.esSentenciaControl(item)){    //Si es sentencia de control ir a estado 3
+                        esControl = true;
                         if(item.Tipo === tipo.if){
                             sentenciaTraducia = "if ";
                             estado = 3;
@@ -74,12 +84,15 @@ class parser{
                     }else if(item.Tipo === tipo.LLAVE_CIERRA){
                         if(esRepeticion){
                             esRepeticion = false;
+                        }else if(esControl){
+                            esControl = false;
+                        }else if(esSwitch){
+                            this.traduccionPyton.push("}");
+                            esSwitch  = false;
                         }else if(esMain){                            
                             this.traduccionPyton.push("if_name_=\"_main_\":");
                             this.traduccionPyton.push(" main()");
                             esMain = false;
-                        }else if(esSwitch){
-                            esSwitch  = false;
                         }
                     }else if(item.Tipo === tipo.else){                        
                         estado = 54;
@@ -909,6 +922,9 @@ class parser{
                     break;
                 case 65:
                     if(item.Tipo === tipo.PUNTO_COMA){
+                        if(esSwitch){
+                            sentenciaTraducia += ",";
+                        }
                         this.traduccionPyton.push(sentenciaTraducia);
                         sentenciaTraducia = "";
                         estado  = 0;                        
@@ -1027,14 +1043,36 @@ class parser{
             }
           }
         });
+
+        console.log("errores Lexicos: "+this.auxListaTokens.length);
+        console.log("errores Sintacticos: "+this.listaErrores.length);
     }    
 
-    public mostrarErroresLexicosSintacticos():void{
-        let tabla:HTMLTableElement = <HTMLTableElement> document.getElementById('tablaErrores');
-        if(tabla){    
-            let conteo:number = 1;        
-            this.auxListaTokens.forEach(element => {
-                let newRow = tabla.insertRow(tabla.rows.length);
+    public cargarPageErrores():void{       
+        var tabError = window.open("/reporte.html","errorPage");        
+        
+        let conteo:number = 1;            
+        this.auxListaTokens.forEach(element => {
+        if(element.getTipoExtend() === "Error lexico"){            
+                this.ambosErrores.push(new errorItem(conteo+"","Lexico",element.Linea+"",element.Colummna+"",element.getTipoExtend()));
+                conteo++;
+            }                
+        });        
+        
+        this.listaErrores.forEach(error => {
+            this.ambosErrores.push(new errorItem(conteo+"","Sintactico",error.Linea+"",error.Columna+"",error.Error));
+            conteo++;
+        });  
+        
+        console.log(conteo);
+        console.log(tabError);
+        let table:HTMLTableElement = <HTMLTableElement> tabError?.document.getElementById('tablaErrores');        
+
+        console.log(table);
+        if(table){
+            console.log("Encontramos la tabla");
+            this.AmbosErrores.forEach(item => {
+                let newRow = table.insertRow(table.rows.length);
 
                 let no = newRow.insertCell(0);
                 let tipo = newRow.insertCell(1);
@@ -1042,34 +1080,15 @@ class parser{
                 let columna = newRow.insertCell(3);
                 let descripcion = newRow.insertCell(4);
 
-                no.innerHTML = conteo + "";
-                tipo.innerHTML = "Lexico";
-                linea.innerHTML = element.Linea + "";
-                columna.innerHTML = element.Colummna + "";
-                descripcion.innerHTML = element.getTipoExtend();
-
-                conteo++;
+                no.innerHTML = item.No;
+                tipo.innerHTML = item.Tipo;
+                linea.innerHTML = item.Linea;
+                columna.innerHTML = item.Columna;
+                descripcion.innerHTML = item.Descripcion;
             });
-
-            this.listaErrores.forEach(error => {
-                let newRow = tabla.insertRow(tabla.rows.length);
-
-                let no = newRow.insertCell(0);
-                let tipo = newRow.insertCell(1);
-                let linea = newRow.insertCell(2);
-                let columna = newRow.insertCell(3);
-                let descripcion = newRow.insertCell(4);
-
-                no.innerHTML = conteo + "";
-                tipo.innerHTML = "Sintactico";
-                linea.innerHTML = error.Linea + "";
-                columna.innerHTML = error.Columna + "";
-                descripcion.innerHTML = error.Error;
-
-                conteo++;
-            });
-
         }
+
+        
     }
 
     public pintarVariables():void{
@@ -1173,10 +1192,12 @@ export function iniciarParser(){
     let parserFun = new parser();
 
     parserFun.startParse();
-    parserFun.mostrarTraduccion();
-    parserFun.mostrarErroresLexicosSintacticos();
-    parserFun.pintarVariables();
-}
+    parserFun.mostrarTraduccion();    
+    parserFun.pintarVariables();  
+    
+    parserFun.cargarPageErrores();       
+    
+}    
 
 let elementButon = document.getElementById('btnTraducir');
 if(elementButon){

@@ -3,13 +3,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var scanner_1 = require("./scanner");
 var errorSintactico_1 = require("./errorSintactico");
 var variableItem_1 = require("./variableItem");
+var erroresList_1 = require("./erroresList");
 var parser = /** @class */ (function () {
     function parser() {
         this.listaErrores = new Array;
         this.auxListaTokens = scanner_1.iniciarScanner();
         this.traduccionPyton = new Array;
         this.listaVariables = new Array;
+        this.ambosErrores = new Array;
     }
+    Object.defineProperty(parser.prototype, "AmbosErrores", {
+        get: function () {
+            return this.ambosErrores;
+        },
+        enumerable: true,
+        configurable: true
+    });
     parser.prototype.startParse = function () {
         var _this = this;
         var estado = 0;
@@ -17,6 +26,7 @@ var parser = /** @class */ (function () {
         var idActual = new Array;
         var esMain = false;
         var esRepeticion = false;
+        var esControl = false;
         var esDoWhile = false;
         var esSwitch = false;
         var switchActual = "";
@@ -58,6 +68,7 @@ var parser = /** @class */ (function () {
                             esRepeticion = true;
                         }
                         else if (_this.esSentenciaControl(item)) { //Si es sentencia de control ir a estado 3
+                            esControl = true;
                             if (item.Tipo === 9 /* if */) {
                                 sentenciaTraducia = "if ";
                                 estado = 3;
@@ -80,13 +91,17 @@ var parser = /** @class */ (function () {
                             if (esRepeticion) {
                                 esRepeticion = false;
                             }
+                            else if (esControl) {
+                                esControl = false;
+                            }
+                            else if (esSwitch) {
+                                _this.traduccionPyton.push("}");
+                                esSwitch = false;
+                            }
                             else if (esMain) {
                                 _this.traduccionPyton.push("if_name_=\"_main_\":");
                                 _this.traduccionPyton.push(" main()");
                                 esMain = false;
-                            }
-                            else if (esSwitch) {
-                                esSwitch = false;
                             }
                         }
                         else if (item.Tipo === 10 /* else */) {
@@ -1076,6 +1091,9 @@ var parser = /** @class */ (function () {
                         break;
                     case 65:
                         if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            if (esSwitch) {
+                                sentenciaTraducia += ",";
+                            }
                             _this.traduccionPyton.push(sentenciaTraducia);
                             sentenciaTraducia = "";
                             estado = 0;
@@ -1214,38 +1232,41 @@ var parser = /** @class */ (function () {
                 }
             }
         });
+        console.log("errores Lexicos: " + this.auxListaTokens.length);
+        console.log("errores Sintacticos: " + this.listaErrores.length);
     };
-    parser.prototype.mostrarErroresLexicosSintacticos = function () {
-        var tabla = document.getElementById('tablaErrores');
-        if (tabla) {
-            var conteo_3 = 1;
-            this.auxListaTokens.forEach(function (element) {
-                var newRow = tabla.insertRow(tabla.rows.length);
+    parser.prototype.cargarPageErrores = function () {
+        var _this = this;
+        var tabError = window.open("/reporte.html", "errorPage");
+        var conteo = 1;
+        this.auxListaTokens.forEach(function (element) {
+            if (element.getTipoExtend() === "Error lexico") {
+                _this.ambosErrores.push(new erroresList_1.errorItem(conteo + "", "Lexico", element.Linea + "", element.Colummna + "", element.getTipoExtend()));
+                conteo++;
+            }
+        });
+        this.listaErrores.forEach(function (error) {
+            _this.ambosErrores.push(new erroresList_1.errorItem(conteo + "", "Sintactico", error.Linea + "", error.Columna + "", error.Error));
+            conteo++;
+        });
+        console.log(conteo);
+        console.log(tabError);
+        var table = tabError === null || tabError === void 0 ? void 0 : tabError.document.getElementById('tablaErrores');
+        console.log(table);
+        if (table) {
+            console.log("Encontramos la tabla");
+            this.AmbosErrores.forEach(function (item) {
+                var newRow = table.insertRow(table.rows.length);
                 var no = newRow.insertCell(0);
                 var tipo = newRow.insertCell(1);
                 var linea = newRow.insertCell(2);
                 var columna = newRow.insertCell(3);
                 var descripcion = newRow.insertCell(4);
-                no.innerHTML = conteo_3 + "";
-                tipo.innerHTML = "Lexico";
-                linea.innerHTML = element.Linea + "";
-                columna.innerHTML = element.Colummna + "";
-                descripcion.innerHTML = element.getTipoExtend();
-                conteo_3++;
-            });
-            this.listaErrores.forEach(function (error) {
-                var newRow = tabla.insertRow(tabla.rows.length);
-                var no = newRow.insertCell(0);
-                var tipo = newRow.insertCell(1);
-                var linea = newRow.insertCell(2);
-                var columna = newRow.insertCell(3);
-                var descripcion = newRow.insertCell(4);
-                no.innerHTML = conteo_3 + "";
-                tipo.innerHTML = "Sintactico";
-                linea.innerHTML = error.Linea + "";
-                columna.innerHTML = error.Columna + "";
-                descripcion.innerHTML = error.Error;
-                conteo_3++;
+                no.innerHTML = item.No;
+                tipo.innerHTML = item.Tipo;
+                linea.innerHTML = item.Linea;
+                columna.innerHTML = item.Columna;
+                descripcion.innerHTML = item.Descripcion;
             });
         }
     };
@@ -1335,8 +1356,8 @@ function iniciarParser() {
     var parserFun = new parser();
     parserFun.startParse();
     parserFun.mostrarTraduccion();
-    parserFun.mostrarErroresLexicosSintacticos();
     parserFun.pintarVariables();
+    parserFun.cargarPageErrores();
 }
 exports.iniciarParser = iniciarParser;
 var elementButon = document.getElementById('btnTraducir');
