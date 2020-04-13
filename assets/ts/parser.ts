@@ -10,6 +10,7 @@ class parser{
     private traduccionPyton:Array<string>;
     private listaVariables:Array<variableItem>;
     private ambosErrores:Array<errorItem>;
+    private htmlExtend:Array<string>;
 
     get AmbosErrores():Array<errorItem>{
         return this.ambosErrores;
@@ -21,6 +22,7 @@ class parser{
         this.traduccionPyton = new Array;
         this.listaVariables = new Array;
         this.ambosErrores = new  Array;
+        this.htmlExtend = new Array;
     }
 
     public startParse():void{
@@ -37,6 +39,16 @@ class parser{
 
         console.log("cantidad de tokens: " + this.auxListaTokens.length);
         this.auxListaTokens.forEach(item => {
+            //Insertar los textos del html
+            if(item.Tipo === tipo.cadena){
+                //Validar que tenga comillas simples
+                if(item.Valor.indexOf("'") != -1){
+                    let cadenaSinComillas =  item.Valor.replace("'","");
+                    this.htmlExtend.push(cadenaSinComillas)
+                }
+                
+            }
+
           if(item.Tipo === tipo.ERROR_LEXICO){
             //Ignorar
           }else{
@@ -1108,9 +1120,9 @@ class parser{
             console.log(element);
         });
 
-        let elementoEntrada = document.getElementById('txtSalidaP');
+        let elementoEntrada:HTMLTextAreaElement =<HTMLTextAreaElement> document.getElementById('txtSalidaP');
         if(elementoEntrada){
-            elementoEntrada.innerHTML =traduccion;
+            elementoEntrada.value = traduccion;
         }
       
     }    
@@ -1180,6 +1192,17 @@ class parser{
         return false;
     }
 
+    public pintarHTML():void{
+        let txtHTML:HTMLTextAreaElement =<HTMLTextAreaElement>document.getElementById('txthtml');
+        if(txtHTML){
+            let htmltxt:string = "";
+            this.htmlExtend.forEach(element => {
+                htmltxt += element + "\n";
+            });
+            txtHTML.value = htmltxt;            
+        }
+    }
+
 }
 
 
@@ -1192,7 +1215,8 @@ export function iniciarParser(){
     parserFun.mostrarTraduccion();    
     parserFun.pintarVariables();  
     
-    parserFun.cargarPageErrores();       
+    parserFun.cargarPageErrores();    
+    parserFun.pintarHTML();
     
 } 
 

@@ -11,6 +11,7 @@ var parser = /** @class */ (function () {
         this.traduccionPyton = new Array;
         this.listaVariables = new Array;
         this.ambosErrores = new Array;
+        this.htmlExtend = new Array;
     }
     Object.defineProperty(parser.prototype, "AmbosErrores", {
         get: function () {
@@ -33,6 +34,14 @@ var parser = /** @class */ (function () {
         var sentenciaTraducia = "";
         console.log("cantidad de tokens: " + this.auxListaTokens.length);
         this.auxListaTokens.forEach(function (item) {
+            //Insertar los textos del html
+            if (item.Tipo === 48 /* cadena */) {
+                //Validar que tenga comillas simples
+                if (item.Valor.indexOf("'") != -1) {
+                    var cadenaSinComillas = item.Valor.replace("'", "");
+                    _this.htmlExtend.push(cadenaSinComillas);
+                }
+            }
             if (item.Tipo === 49 /* ERROR_LEXICO */) {
                 //Ignorar
             }
@@ -1287,7 +1296,7 @@ var parser = /** @class */ (function () {
         });
         var elementoEntrada = document.getElementById('txtSalidaP');
         if (elementoEntrada) {
-            elementoEntrada.innerHTML = traduccion;
+            elementoEntrada.value = traduccion;
         }
     };
     parser.prototype.addError = function (tokenActual, tipoError) {
@@ -1346,6 +1355,16 @@ var parser = /** @class */ (function () {
         }
         return false;
     };
+    parser.prototype.pintarHTML = function () {
+        var txtHTML = document.getElementById('txthtml');
+        if (txtHTML) {
+            var htmltxt_1 = "";
+            this.htmlExtend.forEach(function (element) {
+                htmltxt_1 += element + "\n";
+            });
+            txtHTML.value = htmltxt_1;
+        }
+    };
     return parser;
 }());
 function iniciarParser() {
@@ -1354,6 +1373,7 @@ function iniciarParser() {
     parserFun.mostrarTraduccion();
     parserFun.pintarVariables();
     parserFun.cargarPageErrores();
+    parserFun.pintarHTML();
 }
 exports.iniciarParser = iniciarParser;
 var elementButon = document.getElementById('btnTraducir');

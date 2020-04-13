@@ -29,7 +29,7 @@ var scanner = /** @class */ (function () {
         for (var i = 0; i < entrada.length; i++) {
             caracter = entrada.charAt(i);
             asciiChar = caracter.charCodeAt(0);
-            //console.log(this.estado + " -> " + caracter + " -> ASCII(" + asciiChar + ")");
+            console.log(this.estado + " -> " + caracter + " -> ASCII(" + asciiChar + ")");
             switch (this.estado) {
                 case 0:
                     this.auxLexico += caracter;
@@ -99,7 +99,7 @@ var scanner = /** @class */ (function () {
                     else if (this.esLetra(caracter)) {
                         this.estado = 9;
                     }
-                    else if (asciiChar === 95) {
+                    else if (asciiChar === 95) { //Char _
                         this.estado = 9;
                     }
                     else if (asciiChar === 10) { // Salto de linea
@@ -107,7 +107,7 @@ var scanner = /** @class */ (function () {
                         columna = 0;
                         this.limpiarVariables();
                     }
-                    else if (asciiChar === 32 || asciiChar === 9) { //Espacio y tabulador
+                    else if (asciiChar === 32 || asciiChar === 9 || asciiChar === 13) { //Espacio y tabulador
                         //Ignorar
                         this.limpiarVariables();
                     }

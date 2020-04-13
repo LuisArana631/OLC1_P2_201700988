@@ -35,7 +35,7 @@ import {token, tipo} from "./token";
             caracter = entrada.charAt(i);
             asciiChar = caracter.charCodeAt(0);
 
-            //console.log(this.estado + " -> " + caracter + " -> ASCII(" + asciiChar + ")");
+            console.log(this.estado + " -> " + caracter + " -> ASCII(" + asciiChar + ")");
             switch(this.estado){
                 case 0:
                     this.auxLexico += caracter;
@@ -83,13 +83,13 @@ import {token, tipo} from "./token";
                         this.addToken(tipo.PUNTO, caracter, linea, columna);
                     }else if(this.esLetra(caracter)){
                         this.estado = 9;
-                    }else if(asciiChar === 95){
+                    }else if(asciiChar === 95){ //Char _
                         this.estado = 9;
                     }else if(asciiChar === 10){ // Salto de linea
                         linea++;
                         columna = 0;
                         this.limpiarVariables();
-                    }else if(asciiChar === 32 || asciiChar === 9){ //Espacio y tabulador
+                    }else if(asciiChar === 32 || asciiChar === 9 || asciiChar === 13){ //Espacio y tabulador
                         //Ignorar
                         this.limpiarVariables();
                     }else if(asciiChar === 35 && i === entrada.length-1){
