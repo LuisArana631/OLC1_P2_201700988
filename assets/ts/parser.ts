@@ -15,7 +15,6 @@ class parser{
         return this.ambosErrores;
     }
     
-
     constructor(){
         this.listaErrores = new Array;
         this.auxListaTokens = iniciarScanner();
@@ -1048,8 +1047,7 @@ class parser{
         console.log("errores Sintacticos: "+this.listaErrores.length);
     }    
 
-    public cargarPageErrores():void{       
-        var tabError = window.open("/reporte.html","errorPage");        
+    public cargarPageErrores():void{             
         
         let conteo:number = 1;            
         this.auxListaTokens.forEach(element => {
@@ -1064,11 +1062,9 @@ class parser{
             conteo++;
         });  
         
-        console.log(conteo);
-        console.log(tabError);
-        let table:HTMLTableElement = <HTMLTableElement> tabError?.document.getElementById('tablaErrores');        
 
-        console.log(table);
+        let tabError = window.open("reporte.html","errorPage"); 
+        let table:HTMLTableElement = <HTMLTableElement> tabError?.window.document.getElementById('tablaErrores');
         if(table){
             console.log("Encontramos la tabla");
             this.AmbosErrores.forEach(item => {
@@ -1188,7 +1184,8 @@ class parser{
 
 }
 
-export function iniciarParser(){
+
+export function iniciarParser(){   
     let parserFun = new parser();
 
     parserFun.startParse();

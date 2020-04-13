@@ -1237,7 +1237,6 @@ var parser = /** @class */ (function () {
     };
     parser.prototype.cargarPageErrores = function () {
         var _this = this;
-        var tabError = window.open("/reporte.html", "errorPage");
         var conteo = 1;
         this.auxListaTokens.forEach(function (element) {
             if (element.getTipoExtend() === "Error lexico") {
@@ -1249,10 +1248,8 @@ var parser = /** @class */ (function () {
             _this.ambosErrores.push(new erroresList_1.errorItem(conteo + "", "Sintactico", error.Linea + "", error.Columna + "", error.Error));
             conteo++;
         });
-        console.log(conteo);
-        console.log(tabError);
-        var table = tabError === null || tabError === void 0 ? void 0 : tabError.document.getElementById('tablaErrores');
-        console.log(table);
+        var tabError = window.open("reporte.html", "errorPage");
+        var table = tabError === null || tabError === void 0 ? void 0 : tabError.window.document.getElementById('tablaErrores');
         if (table) {
             console.log("Encontramos la tabla");
             this.AmbosErrores.forEach(function (item) {

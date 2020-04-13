@@ -70,9 +70,21 @@
             </div>
         </footer>
     </div>
+
+    <script src="node_modules/systemjs/dist/system.js"></script>
+    <script>
+        SystemJS.config({
+            baseURL: 'assets/js',
+            defaultJSExtensions: true
+        });
+        SystemJS.import('extraerTabla.js');
+    </script>
+    
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
 </body>
+
+
 
 </html>
