@@ -1240,7 +1240,7 @@ var parser = /** @class */ (function () {
         var conteo = 1;
         this.auxListaTokens.forEach(function (element) {
             if (element.getTipoExtend() === "Error lexico") {
-                _this.ambosErrores.push(new erroresList_1.errorItem(conteo + "", "Lexico", element.Linea + "", element.Colummna + "", element.getTipoExtend()));
+                _this.ambosErrores.push(new erroresList_1.errorItem(conteo + "", "Lexico", element.Linea + "", element.Colummna + "", element.Valor));
                 conteo++;
             }
         });
@@ -1248,8 +1248,7 @@ var parser = /** @class */ (function () {
             _this.ambosErrores.push(new erroresList_1.errorItem(conteo + "", "Sintactico", error.Linea + "", error.Columna + "", error.Error));
             conteo++;
         });
-        var tabError = window.open("reporte.html", "errorPage");
-        var table = tabError === null || tabError === void 0 ? void 0 : tabError.window.document.getElementById('tablaErrores');
+        var table = document.getElementById('tablaErrores');
         if (table) {
             console.log("Encontramos la tabla");
             this.AmbosErrores.forEach(function (item) {
@@ -1292,7 +1291,7 @@ var parser = /** @class */ (function () {
         }
     };
     parser.prototype.addError = function (tokenActual, tipoError) {
-        this.listaErrores.push(new errorSintactico_1.errorSintactico(tokenActual.Valor, tokenActual.Linea, tokenActual.Colummna, tipoError));
+        this.listaErrores.push(new errorSintactico_1.errorSintactico(tokenActual.Valor, tokenActual.Linea, tokenActual.Colummna, tipoError + " = " + tokenActual.Valor));
     };
     parser.prototype.addComentario = function (tokenActual) {
         var cadena;

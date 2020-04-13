@@ -1052,7 +1052,7 @@ class parser{
         let conteo:number = 1;            
         this.auxListaTokens.forEach(element => {
         if(element.getTipoExtend() === "Error lexico"){            
-                this.ambosErrores.push(new errorItem(conteo+"","Lexico",element.Linea+"",element.Colummna+"",element.getTipoExtend()));
+                this.ambosErrores.push(new errorItem(conteo+"","Lexico",element.Linea+"",element.Colummna+"",element.Valor));
                 conteo++;
             }                
         });        
@@ -1060,11 +1060,9 @@ class parser{
         this.listaErrores.forEach(error => {
             this.ambosErrores.push(new errorItem(conteo+"","Sintactico",error.Linea+"",error.Columna+"",error.Error));
             conteo++;
-        });  
+        });         
         
-
-        let tabError = window.open("reporte.html","errorPage"); 
-        let table:HTMLTableElement = <HTMLTableElement> tabError?.window.document.getElementById('tablaErrores');
+        let table:HTMLTableElement = <HTMLTableElement> document.getElementById('tablaErrores');
         if(table){
             console.log("Encontramos la tabla");
             this.AmbosErrores.forEach(item => {
@@ -1118,7 +1116,7 @@ class parser{
     }    
 
     private addError(tokenActual:token, tipoError:string):void{
-        this.listaErrores.push(new errorSintactico(tokenActual.Valor, tokenActual.Linea, tokenActual.Colummna, tipoError));
+        this.listaErrores.push(new errorSintactico(tokenActual.Valor, tokenActual.Linea, tokenActual.Colummna, tipoError + " = " + tokenActual.Valor));
     }
 
     private addComentario(tokenActual:token):void{
@@ -1185,8 +1183,10 @@ class parser{
 }
 
 
-export function iniciarParser(){   
-    let parserFun = new parser();
+
+
+export function iniciarParser(){      
+    let parserFun = new parser();    
 
     parserFun.startParse();
     parserFun.mostrarTraduccion();    
@@ -1194,7 +1194,7 @@ export function iniciarParser(){
     
     parserFun.cargarPageErrores();       
     
-}    
+} 
 
 let elementButon = document.getElementById('btnTraducir');
 if(elementButon){

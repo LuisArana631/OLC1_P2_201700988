@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="assets/css/Navigation-with-Button.css">
     <link rel="stylesheet" href="assets/css/Navigation-with-Search.css">
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="lib/codemirror.css">
 </head>
 
 <body>
@@ -65,9 +66,39 @@
                     </div>
                 </div>
                 <div class="btn-group d-xl-flex justify-content-xl-center align-items-xl-start" role="group" style="width: 55%;margin: 0px;padding: 0px;margin-left: 21%;margin-top: 2%;margin-bottom: 0px;font-family: Graduate, cursive;"><button class="btn btn-primary" data-bs-hover-animate="pulse" type="button" id="btnTraducir">TRADUCIR CÓDIGO</button></div>
+
+
+
+
+
             </div>
+            <div class="table-responsive" style="background-color: #47515b; width:100%;padding: 1%;">
+                <table class="table table-bordered table-sm" id="tablaErrores" style="background-color: rgb(255,255,255);">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">No.</th>
+                            <th style="width: 30%;">Tipo de Error</th>
+                            <th style="width: 10%;">Linea</th>
+                            <th style="width: 10%;">Columna</th>
+                            <th style="width: 40%;">Descripción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+
+
         </div>
+
+
+
+
+
     </div>
+
+
     <div class="footer-dark" style="background-color: rgb(27,30,33);">
         <footer>
             <div class="container">
@@ -111,7 +142,8 @@
         SystemJS.import('scanner.js');
         SystemJS.import('parser.js');
     </script>
-
+    <script src="lib/codemirror.js"></script>
+    <script src="mode/javascript/javascript.js"></script>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>

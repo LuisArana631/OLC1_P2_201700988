@@ -42,6 +42,9 @@ var scanner = /** @class */ (function () {
                     else if (asciiChar === 34) { //Char "
                         this.estado = 2;
                     }
+                    else if (asciiChar === 39) { //Char '
+                        this.estado = 2;
+                    }
                     else if (asciiChar === 61) { //Char =
                         this.estado = 3;
                     }
@@ -96,6 +99,9 @@ var scanner = /** @class */ (function () {
                     else if (this.esLetra(caracter)) {
                         this.estado = 9;
                     }
+                    else if (asciiChar === 95) {
+                        this.estado = 9;
+                    }
                     else if (asciiChar === 10) { // Salto de linea
                         linea++;
                         columna = 0;
@@ -127,7 +133,7 @@ var scanner = /** @class */ (function () {
                     }
                     break;
                 case 2:
-                    if (asciiChar === 34) { //Char "
+                    if (asciiChar === 34 || asciiChar === 39) { //Char "
                         this.auxLexico += caracter;
                         this.addToken(48 /* cadena */, this.auxLexico, linea, columna);
                     }

@@ -38,61 +38,65 @@ import {token, tipo} from "./token";
             //console.log(this.estado + " -> " + caracter + " -> ASCII(" + asciiChar + ")");
             switch(this.estado){
                 case 0:
-                this.auxLexico += caracter;
-                if(this.esNumero(caracter)){
-                   this.estado = 10;
-                }else if(asciiChar === 47){ // Char /
-                    this.estado = 1;
-                }else if(asciiChar === 34){ //Char "
-                    this.estado = 2;
-                }else if(asciiChar === 61){ //Char =
-                    this.estado = 3;
-                }else if(asciiChar === 59){ //Char ;
-                    this.addToken(tipo.PUNTO_COMA, caracter, linea, columna);
-                }else if(asciiChar === 44){ //Char ,
-                    this.addToken(tipo.COMA, caracter, linea, columna);
-                }else if(asciiChar === 43){ //Char +
-                    this.estado = 16;
-                }else if(asciiChar === 45){  //Char -
-                    this.estado = 17;
-                }else if(asciiChar === 42){ //Char *
-                    this.addToken(tipo.MULTIPLICACION, caracter, linea, columna);
-                }else if(asciiChar === 38){ // Char &
-                    this.estado = 4;
-                }else if(asciiChar === 124){  //Char |
-                    this.estado = 5;
-                }else if(asciiChar === 33){  //Char  !
-                    this.estado = 6;
-                }else if(asciiChar === 40){  //Char (
-                    this.addToken(tipo.PARENTESIS_ABRE, caracter, linea, columna);
-                }else if(asciiChar === 41){  //Char )
-                    this.addToken(tipo.PARENTESIS_CIERRA, caracter, linea, columna);
-                }else if(asciiChar === 58){ //Char :
-                    this.addToken(tipo.DOS_PUNTOS, caracter, linea, columna);
-                }else if(asciiChar === 123){ //Char {
-                    this.addToken(tipo.LLAVE_ABRE, caracter, linea, columna);
-                }else if(asciiChar === 125){ //Char }
-                    this.addToken(tipo.LLAVE_CIERRA, caracter, linea, columna);
-                }else if(asciiChar === 62){ //Char >
-                    this.estado = 7;
-                }else if(asciiChar === 60){ // Char <
-                    this.estado = 8;
-                }else if(asciiChar === 46){ //Char .
-                    this.addToken(tipo.PUNTO, caracter, linea, columna);
-                }else if(this.esLetra(caracter)){
-                    this.estado = 9;
-                }else if(asciiChar === 10){ // Salto de linea
-                    linea++;
-                    columna = 0;
-                    this.limpiarVariables();
-                }else if(asciiChar === 32 || asciiChar === 9){ //Espacio y tabulador
-                    //Ignorar
-                    this.limpiarVariables();
-                }else if(asciiChar === 35 && i === entrada.length-1){
-                    //Ignorar caracter final
-                }else{
-                    this.addToken(tipo.ERROR_LEXICO, caracter, linea, columna);
-                }
+                    this.auxLexico += caracter;
+                    if(this.esNumero(caracter)){
+                        this.estado = 10;
+                    }else if(asciiChar === 47){ // Char /
+                        this.estado = 1;
+                    }else if(asciiChar === 34){ //Char "
+                        this.estado = 2;
+                    }else if(asciiChar === 39){ //Char '
+                        this.estado = 2;
+                    }else if(asciiChar === 61){ //Char =
+                        this.estado = 3;
+                    }else if(asciiChar === 59){ //Char ;
+                        this.addToken(tipo.PUNTO_COMA, caracter, linea, columna);
+                    }else if(asciiChar === 44){ //Char ,
+                        this.addToken(tipo.COMA, caracter, linea, columna);
+                    }else if(asciiChar === 43){ //Char +
+                        this.estado = 16;
+                    }else if(asciiChar === 45){  //Char -
+                        this.estado = 17;
+                    }else if(asciiChar === 42){ //Char *
+                        this.addToken(tipo.MULTIPLICACION, caracter, linea, columna);
+                    }else if(asciiChar === 38){ // Char &
+                        this.estado = 4;
+                    }else if(asciiChar === 124){  //Char |
+                        this.estado = 5;
+                    }else if(asciiChar === 33){  //Char  !
+                        this.estado = 6;
+                    }else if(asciiChar === 40){  //Char (
+                        this.addToken(tipo.PARENTESIS_ABRE, caracter, linea, columna);
+                    }else if(asciiChar === 41){  //Char )
+                        this.addToken(tipo.PARENTESIS_CIERRA, caracter, linea, columna);
+                    }else if(asciiChar === 58){ //Char :
+                        this.addToken(tipo.DOS_PUNTOS, caracter, linea, columna);
+                    }else if(asciiChar === 123){ //Char {
+                        this.addToken(tipo.LLAVE_ABRE, caracter, linea, columna);
+                    }else if(asciiChar === 125){ //Char }
+                        this.addToken(tipo.LLAVE_CIERRA, caracter, linea, columna);
+                    }else if(asciiChar === 62){ //Char >
+                        this.estado = 7;
+                    }else if(asciiChar === 60){ // Char <
+                        this.estado = 8;
+                    }else if(asciiChar === 46){ //Char .
+                        this.addToken(tipo.PUNTO, caracter, linea, columna);
+                    }else if(this.esLetra(caracter)){
+                        this.estado = 9;
+                    }else if(asciiChar === 95){
+                        this.estado = 9;
+                    }else if(asciiChar === 10){ // Salto de linea
+                        linea++;
+                        columna = 0;
+                        this.limpiarVariables();
+                    }else if(asciiChar === 32 || asciiChar === 9){ //Espacio y tabulador
+                        //Ignorar
+                        this.limpiarVariables();
+                    }else if(asciiChar === 35 && i === entrada.length-1){
+                        //Ignorar caracter final
+                    }else{
+                        this.addToken(tipo.ERROR_LEXICO, caracter, linea, columna);
+                    }
                     break;
                 case 1:
                     if(asciiChar === 47){  //Char /
@@ -107,7 +111,7 @@ import {token, tipo} from "./token";
                     }
                     break;
                 case 2:
-                    if(asciiChar === 34){ //Char "
+                    if(asciiChar === 34 || asciiChar === 39){ //Char "
                         this.auxLexico += caracter;
                         this.addToken(tipo.cadena, this.auxLexico,linea, columna);
                     }else{
