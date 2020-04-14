@@ -18,8 +18,9 @@ var scanner = /** @class */ (function () {
         var entrada;
         var elementoEntrada = document.getElementById('txtEntradaC');
         if (elementoEntrada) {
-            entrada = elementoEntrada.innerHTML;
+            entrada = elementoEntrada.value;
         }
+        console.log(entrada);
         entrada += "#";
         var linea = 1;
         var columna = 1;

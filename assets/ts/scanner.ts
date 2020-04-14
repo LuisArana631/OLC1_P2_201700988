@@ -18,10 +18,12 @@ import {token, tipo} from "./token";
     public startScanner():void{
 
         let entrada;
-        let elementoEntrada = document.getElementById('txtEntradaC');
+        let elementoEntrada:HTMLTextAreaElement = <HTMLTextAreaElement> document.getElementById('txtEntradaC');
         if(elementoEntrada){
-            entrada = elementoEntrada.innerHTML;
+            entrada = elementoEntrada.value;
         }
+
+        console.log(entrada);   
 
         entrada += "#";
         let linea:number = 1;
