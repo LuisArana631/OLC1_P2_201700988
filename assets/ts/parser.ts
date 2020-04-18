@@ -1304,12 +1304,10 @@ class parser{
     }
 
     private remplazarCadena(cadena:string):string{
-        let remplazo:string = cadena;
-
-        remplazo = remplazo.replace(">", "");
+        let remplazo:string = cadena;        
 
         remplazo = remplazo.replace("<HTML","\"HTML\":{");
-        remplazo = remplazo.replace("</HTML","}");
+        remplazo = remplazo.replace("</HTML>","}");
 
         remplazo = remplazo.replace("<HEAD","\"HEAD\":{");
         remplazo = remplazo.replace("</HEAD>","}");
@@ -1342,6 +1340,8 @@ class parser{
         remplazo = remplazo.replace("</INPUT>","}");
 
         remplazo = remplazo.replace("style=","\"STYLE\":")
+
+        remplazo = remplazo.replace(">", "");
 
         return remplazo;
     }

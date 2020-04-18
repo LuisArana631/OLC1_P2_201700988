@@ -279,8 +279,16 @@ var scanner = /** @class */ (function () {
                         i--;
                     }
                     else if (this.auxLexico === "do") {
-                        this.addToken(18 /* do */, this.auxLexico, linea, columna);
-                        i--;
+                        var auxCaracter = entrada.charAt(i + 1);
+                        console.log(auxCaracter);
+                        if (auxCaracter === "b") {
+                            this.auxLexico += caracter;
+                            //omitir el do
+                        }
+                        else {
+                            this.addToken(18 /* do */, this.auxLexico, linea, columna);
+                            i--;
+                        }
                     }
                     else if (this.auxLexico === "return") {
                         this.addToken(19 /* return */, this.auxLexico, linea, columna);

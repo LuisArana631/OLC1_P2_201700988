@@ -1486,9 +1486,8 @@ var parser = /** @class */ (function () {
     };
     parser.prototype.remplazarCadena = function (cadena) {
         var remplazo = cadena;
-        remplazo = remplazo.replace(">", "");
         remplazo = remplazo.replace("<HTML", "\"HTML\":{");
-        remplazo = remplazo.replace("</HTML", "}");
+        remplazo = remplazo.replace("</HTML>", "}");
         remplazo = remplazo.replace("<HEAD", "\"HEAD\":{");
         remplazo = remplazo.replace("</HEAD>", "}");
         remplazo = remplazo.replace("<BODY", "\"BODY\":{");
@@ -1510,6 +1509,7 @@ var parser = /** @class */ (function () {
         remplazo = remplazo.replace("<INPUT", "\"INPUT\":{\n\"TEXT\":");
         remplazo = remplazo.replace("</INPUT>", "}");
         remplazo = remplazo.replace("style=", "\"STYLE\":");
+        remplazo = remplazo.replace(">", "");
         return remplazo;
     };
     return parser;
