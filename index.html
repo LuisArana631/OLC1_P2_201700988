@@ -24,8 +24,9 @@
             <a class="navbar-brand text-break" href="#" style="color: rgb(255,255,255);padding: 0px;font-family: Graduate, cursive;padding-left: 0px;padding-top: 10px;padding-bottom: 10px;"> <img class="img-fluid" data-bs-hover-animate="rubberBand" style="width: 45px;height: 45px;" src="assets/img/logotrans.png"> Traductor C# -Python</a>
             <div class="btn-toolbar">
                 <div class="btn-group" role="group" style="width: 100%; font-family: Graduate, cursive;"><input class="btn btn-primary" type="file" id="file-input" data-bs-hover-animate="jello" style="background-color: rgb(28,86,147); width: 70%;" />
-                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 25%;">Guardar</button><button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 20%;">Nuevo</button>
-                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 25%;">Reportes</button>
+                    <button id="btn-guardar" class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 25%;">Guardar</button>
+                    <button class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 20%;">Nuevo</button>
+                    <button id="btn-reporte" class="btn btn-primary" data-bs-hover-animate="jello" type="button" style="background-color: rgb(28,86,147); width: 25%;">Reportes</button>
                 </div>
             </div>
         </div>
@@ -142,7 +143,10 @@
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-init.js"></script>
     <script src="assets/js/cargaFile.js"></script>
+    <script src="assets/js/download.js"></script>
+    <script src="assets/js/guardar.js"></script>
     <script srt="assets/js/codeMirrorStart.js"></script>
+
 
     <!--
     <script>
