@@ -18,10 +18,12 @@ import {token, tipo} from "./token";
     public startScanner():void{
 
         let entrada;
-        let elementoEntrada = document.getElementById('txtEntradaC');
+        let elementoEntrada:HTMLTextAreaElement = <HTMLTextAreaElement> document.getElementById('txtEntradaC');
         if(elementoEntrada){
-            entrada = elementoEntrada.innerHTML;
+            entrada = elementoEntrada.value;
         }
+
+        console.log(entrada);   
 
         entrada += "#";
         let linea:number = 1;
@@ -230,8 +232,15 @@ import {token, tipo} from "./token";
                         this.addToken(tipo.do, this.auxLexico, linea, columna);
                         i--;
                     }else if(this.auxLexico === "do"){
-                        this.addToken(tipo.do, this.auxLexico, linea, columna);
-                        i--;
+                        let auxCaracter:any = entrada.charAt(i+1);
+                        console.log(auxCaracter);
+                        if(auxCaracter === "b"){
+                            this.auxLexico += caracter;
+                            //omitir el do
+                        }else{
+                            this.addToken(tipo.do, this.auxLexico, linea, columna);
+                            i--;
+                        }                        
                     }else if(this.auxLexico === "return"){
                         this.addToken(tipo.return, this.auxLexico, linea, columna);
                         i--;

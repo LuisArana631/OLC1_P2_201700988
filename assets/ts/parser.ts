@@ -44,6 +44,9 @@ class parser{
                 //Validar que tenga comillas simples
                 if(item.Valor.indexOf("'") != -1){
                     let cadenaSinComillas =  item.Valor.replace("'","");
+                    cadenaSinComillas =  cadenaSinComillas.replace("'","");
+                    cadenaSinComillas = cadenaSinComillas.replace("&gt;", ">");
+                    cadenaSinComillas = cadenaSinComillas.replace("&lt;","<");
                     this.htmlExtend.push(cadenaSinComillas)
                 }
                 
@@ -138,6 +141,9 @@ class parser{
                             let error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
                             this.addError(item, error)
                         }
+                    }else if(item.Tipo === tipo.identificador){                    
+                        sentenciaTraducia = item.Valor;
+                        estado = 75;
                     }else{
                         let error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
                         this.addError(item, error);
@@ -804,7 +810,7 @@ class parser{
                         sentenciaTraducia = "elif ";                        
                         estado = 55;
                     }else if(item.Tipo === tipo.LLAVE_ABRE){
-                        this.traduccionPyton.push("else{");
+                        this.traduccionPyton.push("else:");
                         estado = 0;                    
                     }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
@@ -1043,8 +1049,91 @@ class parser{
                     if(item.Tipo === tipo.PARENTESIS_CIERRA){
                         sentenciaTraducia += item.Valor;
                         estado= 66;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
                     }
-                    else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                    break;
+                case 75:
+                    if(item.Tipo === tipo.IGUAL){
+                        sentenciaTraducia += " " + item.Valor;
+                        estado = 76;
+                    }else if(item.Tipo === tipo.INCREMENTO || item.Tipo === tipo.DECREMENTO){
+                        sentenciaTraducia += item.Valor;
+                        estado = 80;                    
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un = para asignar dato a la variable pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 76:
+                    if(item.Tipo === tipo.identificador){
+                        sentenciaTraducia += " " + item.Valor;
+                        estado = 77;
+                    }else if(item.Tipo === tipo.cadena || item.Tipo === tipo.numero){
+                        estado = 78;
+                        sentenciaTraducia += " " + item.Valor;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un (identificador|numero|cadena) para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 77:
+                    if(item.Tipo === tipo.PARENTESIS_ABRE){
+                        estado = 79;
+                        sentenciaTraducia += item.Valor;
+                    }else if(item.Tipo === tipo.SUMA || item.Tipo === tipo.RESTA || item.Tipo === tipo.DIVISION || item.Tipo === tipo.MULTIPLICACION){
+                        sentenciaTraducia += item.Valor;
+                        estado = 76;                    
+                    }else if(item.Tipo === tipo.PUNTO_COMA){
+                        this.traduccionPyton.push(sentenciaTraducia);
+                        sentenciaTraducia = "";
+                        estado = 0;                    
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 78:
+                    if(item.Tipo === tipo.SUMA || item.Tipo === tipo.RESTA || item.Tipo === tipo.DIVISION || item.Tipo === tipo.MULTIPLICACION){
+                        sentenciaTraducia += item.Valor;
+                        estado = 76;
+                    }else if(item.Tipo === tipo.PUNTO_COMA){
+                        this.traduccionPyton.push(sentenciaTraducia);
+                        sentenciaTraducia = "";
+                        estado = 0;                    
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 79:
+                    if(item.Tipo === tipo.PARENTESIS_CIERRA){
+                        sentenciaTraducia += item.Valor;    
+                        estado = 78;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
+                        this.addComentario(item);
+                    }else{
+                        let error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                        this.addError(item,error);
+                    }
+                    break;
+                case 80:
+                    if(item.Tipo === tipo.PUNTO_COMA){
+                        this.traduccionPyton.push(sentenciaTraducia);
+                        sentenciaTraducia = "";
+                        estado = 0;
+                    }else if(this.esComentario(item)){    //Si es comentario solo traducir y agregarlo
                         this.addComentario(item);
                     }else{
                         let error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
@@ -1203,6 +1292,60 @@ class parser{
         }
     }
 
+    public extraerJSON():void{
+        let txtJson:HTMLTextAreaElement = <HTMLTextAreaElement> document.getElementById('txtjson');
+        if(txtJson){
+            let jsontxt:string = "";
+            this.htmlExtend.forEach(line => {
+                jsontxt += this.remplazarCadena(line) + "\n";
+            });
+            txtJson.value = jsontxt;
+        }        
+    }
+
+    private remplazarCadena(cadena:string):string{
+        let remplazo:string = cadena;        
+
+        remplazo = remplazo.replace("<HTML","\"HTML\":{");
+        remplazo = remplazo.replace("</HTML>","}");
+
+        remplazo = remplazo.replace("<HEAD","\"HEAD\":{");
+        remplazo = remplazo.replace("</HEAD>","}");
+
+        remplazo = remplazo.replace("<BODY","\"BODY\":{");
+        remplazo = remplazo.replace("</BODY>","}");
+
+        remplazo = remplazo.replace("<TITLE","\"TITLE\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</TILE>","}");
+
+        remplazo = remplazo.replace("<DIV","\"DIV\":{");
+        remplazo = remplazo.replace("</DIV>","}");
+
+        remplazo = remplazo.replace("<BR","\"BR\":{");
+        remplazo = remplazo.replace("</BR>","}");
+
+        remplazo = remplazo.replace("<P","\"P\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</P>","}");
+
+        remplazo = remplazo.replace("<H1","\"H1\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</H1>","}");
+
+        remplazo = remplazo.replace("<BUTTON","\"BUTTON\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</BUTTON>","}");
+
+        remplazo = remplazo.replace("<LABEL","\"LABEL\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</LABEL>","}");
+
+        remplazo = remplazo.replace("<INPUT","\"INPUT\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</INPUT>","}");
+
+        remplazo = remplazo.replace("style=","\"STYLE\":")
+
+        remplazo = remplazo.replace(">", "");
+
+        return remplazo;
+    }
+
 }
 
 
@@ -1217,7 +1360,7 @@ export function iniciarParser(){
     
     parserFun.cargarPageErrores();    
     parserFun.pintarHTML();
-    
+    parserFun.extraerJSON();
 } 
 
 let elementButon = document.getElementById('btnTraducir');

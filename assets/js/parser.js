@@ -39,6 +39,9 @@ var parser = /** @class */ (function () {
                 //Validar que tenga comillas simples
                 if (item.Valor.indexOf("'") != -1) {
                     var cadenaSinComillas = item.Valor.replace("'", "");
+                    cadenaSinComillas = cadenaSinComillas.replace("'", "");
+                    cadenaSinComillas = cadenaSinComillas.replace("&gt;", ">");
+                    cadenaSinComillas = cadenaSinComillas.replace("&lt;", "<");
                     _this.htmlExtend.push(cadenaSinComillas);
                 }
             }
@@ -155,6 +158,10 @@ var parser = /** @class */ (function () {
                                 var error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
                                 _this.addError(item, error);
                             }
+                        }
+                        else if (item.Tipo === 46 /* identificador */) {
+                            sentenciaTraducia = item.Valor;
+                            estado = 75;
                         }
                         else {
                             var error = "Se esperaba (Comentario|Impresion de Consola|Sentencia de control|Sentencia de Repeticion|Metodo|Tipo de dato) pero se encontró (" + item.getTipoExtend() + ")";
@@ -947,7 +954,7 @@ var parser = /** @class */ (function () {
                             estado = 55;
                         }
                         else if (item.Tipo === 35 /* LLAVE_ABRE */) {
-                            _this.traduccionPyton.push("else{");
+                            _this.traduccionPyton.push("else:");
                             estado = 0;
                         }
                         else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
@@ -1238,6 +1245,107 @@ var parser = /** @class */ (function () {
                             _this.addError(item, error);
                         }
                         break;
+                    case 75:
+                        if (item.Tipo === 22 /* IGUAL */) {
+                            sentenciaTraducia += " " + item.Valor;
+                            estado = 76;
+                        }
+                        else if (item.Tipo === 44 /* INCREMENTO */ || item.Tipo === 45 /* DECREMENTO */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 80;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un = para asignar dato a la variable pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 76:
+                        if (item.Tipo === 46 /* identificador */) {
+                            sentenciaTraducia += " " + item.Valor;
+                            estado = 77;
+                        }
+                        else if (item.Tipo === 48 /* cadena */ || item.Tipo === 47 /* numero */) {
+                            estado = 78;
+                            sentenciaTraducia += " " + item.Valor;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un (identificador|numero|cadena) para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 77:
+                        if (item.Tipo === 32 /* PARENTESIS_ABRE */) {
+                            estado = 79;
+                            sentenciaTraducia += item.Valor;
+                        }
+                        else if (item.Tipo === 25 /* SUMA */ || item.Tipo === 26 /* RESTA */ || item.Tipo === 28 /* DIVISION */ || item.Tipo === 27 /* MULTIPLICACION */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 76;
+                        }
+                        else if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
+                            estado = 0;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 78:
+                        if (item.Tipo === 25 /* SUMA */ || item.Tipo === 26 /* RESTA */ || item.Tipo === 28 /* DIVISION */ || item.Tipo === 27 /* MULTIPLICACION */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 76;
+                        }
+                        else if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
+                            estado = 0;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 79:
+                        if (item.Tipo === 33 /* PARENTESIS_CIERRA */) {
+                            sentenciaTraducia += item.Valor;
+                            estado = 78;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
+                    case 80:
+                        if (item.Tipo === 23 /* PUNTO_COMA */) {
+                            _this.traduccionPyton.push(sentenciaTraducia);
+                            sentenciaTraducia = "";
+                            estado = 0;
+                        }
+                        else if (_this.esComentario(item)) { //Si es comentario solo traducir y agregarlo
+                            _this.addComentario(item);
+                        }
+                        else {
+                            var error = "Se esperaba un numero para manejar para el ciclo while pero se encontro (" + item.getTipoExtend() + ")";
+                            _this.addError(item, error);
+                        }
+                        break;
                 }
             }
         });
@@ -1365,6 +1473,45 @@ var parser = /** @class */ (function () {
             txtHTML.value = htmltxt_1;
         }
     };
+    parser.prototype.extraerJSON = function () {
+        var _this = this;
+        var txtJson = document.getElementById('txtjson');
+        if (txtJson) {
+            var jsontxt_1 = "";
+            this.htmlExtend.forEach(function (line) {
+                jsontxt_1 += _this.remplazarCadena(line) + "\n";
+            });
+            txtJson.value = jsontxt_1;
+        }
+    };
+    parser.prototype.remplazarCadena = function (cadena) {
+        var remplazo = cadena;
+        remplazo = remplazo.replace("<HTML", "\"HTML\":{");
+        remplazo = remplazo.replace("</HTML>", "}");
+        remplazo = remplazo.replace("<HEAD", "\"HEAD\":{");
+        remplazo = remplazo.replace("</HEAD>", "}");
+        remplazo = remplazo.replace("<BODY", "\"BODY\":{");
+        remplazo = remplazo.replace("</BODY>", "}");
+        remplazo = remplazo.replace("<TITLE", "\"TITLE\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</TILE>", "}");
+        remplazo = remplazo.replace("<DIV", "\"DIV\":{");
+        remplazo = remplazo.replace("</DIV>", "}");
+        remplazo = remplazo.replace("<BR", "\"BR\":{");
+        remplazo = remplazo.replace("</BR>", "}");
+        remplazo = remplazo.replace("<P", "\"P\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</P>", "}");
+        remplazo = remplazo.replace("<H1", "\"H1\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</H1>", "}");
+        remplazo = remplazo.replace("<BUTTON", "\"BUTTON\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</BUTTON>", "}");
+        remplazo = remplazo.replace("<LABEL", "\"LABEL\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</LABEL>", "}");
+        remplazo = remplazo.replace("<INPUT", "\"INPUT\":{\n\"TEXT\":");
+        remplazo = remplazo.replace("</INPUT>", "}");
+        remplazo = remplazo.replace("style=", "\"STYLE\":");
+        remplazo = remplazo.replace(">", "");
+        return remplazo;
+    };
     return parser;
 }());
 function iniciarParser() {
@@ -1374,6 +1521,7 @@ function iniciarParser() {
     parserFun.pintarVariables();
     parserFun.cargarPageErrores();
     parserFun.pintarHTML();
+    parserFun.extraerJSON();
 }
 exports.iniciarParser = iniciarParser;
 var elementButon = document.getElementById('btnTraducir');
